@@ -1,0 +1,7 @@
+#!/bin/bash
+source filenames.sh
+source_corpus_url="http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz"
+# if file not available locally, then download it
+if [ ! -f $corpus_unmodified ]; then
+wget -qO- "$source_corpus_url" | tar xzf- | python clean_corpus.py > $corpus_unmodified 
+fi

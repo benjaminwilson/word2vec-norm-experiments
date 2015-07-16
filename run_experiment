@@ -1,16 +1,6 @@
 #!/bin/bash
+source filenames.sh
 
-source_corpus_url="http://man7.org/linux/man-pages/man2/accept.2.html"
-corpus_unmodified=corpus-unmodified.txt
-corpus_modified=corpus-modified.txt
-vectors_binary="vectors.bin"
-w2v_executable="$HOME/trunk/word2vec"
-num_threads=1
-
-# if file not available locally, then download it
-if [ ! -f $corpus_unmodified ]; then
-wget -qO $corpus_unmodified "$source_corpus_url"
-fi
 python modify_corpus.py $corpus_unmodified $corpus_modified
-#$w2v_executable -min-count 200 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads $num_threads -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
-$w2v_executable -min-count 2 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads $num_threads -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
+#$HOME/trunk/word2vec -min-count 200 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads 32 -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
+$HOME/trunk/word2vec -min-count 2 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads 1 -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
