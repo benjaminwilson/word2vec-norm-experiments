@@ -5,11 +5,14 @@ Writes out files listing the words chosen.
 Requires sufficient diskspace to write out the modified text at intermediate steps.
 """
 from __future__ import print_function
+import os
 from parameters import *
 from functions import *
 
+directory = os.path.dirname(os.path.realpath(__file__))
+
 filenames = dict()
-execfile('filenames.sh', filenames)
+execfile(os.path.join(directory, 'filenames.sh'), filenames)
 
 intermediate_file = 'delete.me'
 
