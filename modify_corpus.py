@@ -25,11 +25,11 @@ frequent_words = [word for word in counts if counts[word] > experiment_word_occu
 random.seed(random_seed)
 words_experiment_1, words_experiment_2 = [random.sample(frequent_words, number_of_experiment_words) for _ in range(2)]
 
-with file('word_freq_experiment_words', 'w') as f:
+with file(filenames['word_freq_experiment_words'], 'w') as f:
     for word in words_experiment_1:
         print('%s,%i' % (word, counts[word]), file=f)
 
-with file('coocc_noise_experiment_words', 'w') as f:
+with file(filenames['coocc_noise_experiment_words'], 'w') as f:
     for word in words_experiment_2:
         print('%s,%i' % (word, counts[word]), file=f)
 
@@ -48,6 +48,7 @@ for word in words_experiment_2:
 tmp_file = 'delete.me.2'
 with open(intermediate_file) as f_in, open(tmp_file, 'w') as f_out:
     replace_words(word_samplers, f_in, f_out)
+os.remove(intermediate_file)
 intermediate_file = tmp_file
 
 # add noise to the cooccurrence distributions of experiment 2 words
@@ -60,3 +61,4 @@ for word in words_experiment_2:
 
 with open(intermediate_file) as f_in, open(filenames['corpus_modified'], 'w') as f_out:
     intersperse_words(token_freq_dict, f_in, f_out)
+os.remove(intermediate_file)

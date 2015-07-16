@@ -1,6 +1,0 @@
-#!/bin/bash
-source filenames.sh
-
-python modify_corpus.py $corpus_unmodified $corpus_modified
-#$HOME/trunk/word2vec -min-count 200 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads 32 -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
-$HOME/trunk/word2vec -min-count 2 -hs 1 -window 10 -size 100 -cbow 1 -debug 2 -threads 1 -iter 20 -binary 1 -output $vectors_binary -train $corpus_modified
