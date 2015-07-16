@@ -36,11 +36,11 @@ if __name__ == '__main__':
         chunk = chunk.str.decode('utf-8').fillna(u'')
         chunk = chunk.apply(unescape_line_breaks)
         for _, text in chunk.iteritems():
-        try:
-            if not args.case_sensitive:
-                text = text.lower()
-            tokens = tokenizer.findall(text)
-            cleaned = u' '.join(tokens)
-            print cleaned.encode('utf-8')
-        except ValueError as e:
-            pass
+            try:
+                if not args.case_sensitive:
+                    text = text.lower()
+                tokens = tokenizer.findall(text)
+                cleaned = u' '.join(tokens)
+                print cleaned.encode('utf-8')
+            except ValueError as e:
+                pass
