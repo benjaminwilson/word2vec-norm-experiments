@@ -1,3 +1,5 @@
 corpus_unmodified="corpus-unmodified.txt"
 corpus_modified="corpus-modified.txt"
 vectors_binary="vectors.bin"
+word_freq_experiment_words="word_freq_experiment_words"
+coocc_noise_experiment_words="coocc_noise_experiment_words"

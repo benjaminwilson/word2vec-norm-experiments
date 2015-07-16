@@ -1,22 +1,19 @@
 """
 Modifies an input text for the experiments according to the parameters defined in parameters.py
-Also writes out files 'word_freq_experiment_words' and 'coocc_noise_experiment_words', listing the words chosen.
+Assumes the filenames from filenames.sh
+Writes out files listing the words chosen.
 Requires sufficient diskspace to write out the modified text at intermediate steps.
 """
 from __future__ import print_function
-import sys
 from parameters import *
 from functions import *
 
-if len(sys.argv) != 3:
-    print('Usage: <text_in> <text_out>')
-    exit(1)
+filenames = dict()
+execfile('filenames.sh', filenames)
 
-in_file = sys.argv[1]
-out_file = sys.argv[2]
 intermediate_file = 'delete.me'
 
-with file(in_file) as f:
+with file(filenames['corpus_unmodified']) as f:
     counts = count_words(f)
 total_words = sum(counts.values())
 print('Total words in corpus : %i' % total_words)
@@ -34,7 +31,7 @@ with file('coocc_noise_experiment_words', 'w') as f:
         print('%s,%i' % (word, counts[word]), file=f)
 
 # intersperse the meaningless token throughout the corpus
-with open(in_file) as f_in, open(intermediate_file, 'w') as f_out:
+with open(filenames['corpus_unmodified']) as f_in, open(intermediate_file, 'w') as f_out:
     intersperse_words({meaningless_token: meaningless_token_frequency}, f_in, f_out)
 words_experiment_1.append(meaningless_token)
 
@@ -58,5 +55,5 @@ for word in words_experiment_2:
         current_freq = target_freq * truncated_geometric_proba(coocc_noise_experiment_ratio, i, coocc_noise_experiment_power_max)
         token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 
-with open(intermediate_file) as f_in, open(out_file, 'w') as f_out:
+with open(intermediate_file) as f_in, open(filenames['corpus_modified'], 'w') as f_out:
     intersperse_words(token_freq_dict, f_in, f_out)
