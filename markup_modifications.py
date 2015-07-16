@@ -29,7 +29,13 @@ for word in ['cat', meaningless_token]:
 w_replacement = StringIO()
 replace_words(word_samplers, StringIO(w_meaningless.getvalue()), w_replacement)
 
-print markup(w_replacement.getvalue())
+print r"""\begin{figure}[t]
+	\texttt{"""
+print markup(w_replacement.getvalue()).strip()
+print r"""}
+\caption{Text modified for the word frequency experiment, where the word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
+\label{fig:word-frequency-experiment-text}
+\end{figure}"""
 
 print '-' * 80
 
@@ -51,4 +57,11 @@ for i in range(1, coocc_noise_experiment_power_max + 1):
 
 w_noise = StringIO()
 intersperse_words(token_freq_dict, StringIO(w_replacement.getvalue()), w_noise)
-print markup(w_noise.getvalue())
+
+print r"""\begin{figure}[t]
+	\texttt{"""
+print markup(w_noise.getvalue()).strip()
+print r"""}
+\caption{Text modified for the co-occurrence noise experiment, where the word \word{cat} was chosen, $\lambda = 5/6$ and $n=3$.}
+\label{fig:cooccurrence-noise-experiment-text}
+\end{figure}"""
