@@ -16,7 +16,8 @@ in_file = sys.argv[1]
 out_file = sys.argv[2]
 intermediate_file = 'delete.me'
 
-counts = count_words(in_file)
+with file(in_file) as f:
+    counts = count_words(f)
 total_words = sum(counts.values())
 print('Total words in corpus : %i' % total_words)
 
@@ -33,7 +34,8 @@ with file('coocc_noise_experiment_words', 'w') as f:
         print('%s,%i' % (word, counts[word]), file=f)
 
 # intersperse the meaningless token throughout the corpus
-intersperse_words({meaningless_token: meaningless_token_frequency}, in_file, intermediate_file)
+with open(in_file) as f_in, open(intermediate_file, 'w') as f_out:
+    intersperse_words({meaningless_token: meaningless_token_frequency}, f_in, f_out)
 words_experiment_1.append(meaningless_token)
 
 # perform the replacement procedures for the word frequency and the noise cooccurrence experiments
@@ -44,7 +46,8 @@ for word in words_experiment_2:
     word_samplers[word] = truncated_geometric_sampling(word, coocc_noise_experiment_ratio, coocc_noise_experiment_power_max)
 
 tmp_file = 'delete.me.2'
-replace_words(word_samplers, intermediate_file, tmp_file)
+with open(intermediate_file) as f_in, open(tmp_file, 'w') as f_out:
+    replace_words(word_samplers, f_in, f_out)
 intermediate_file = tmp_file
 
 # add noise to the cooccurrence distributions of experiment 2 words
@@ -55,4 +58,5 @@ for word in words_experiment_2:
         current_freq = target_freq * truncated_geometric_proba(coocc_noise_experiment_ratio, i, coocc_noise_experiment_power_max)
         token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 
-intersperse_words(token_freq_dict, intermediate_file, out_file)
+with open(intermediate_file) as f_in, open(out_file, 'w') as f_out:
+    intersperse_words(token_freq_dict, f_in, f_out)

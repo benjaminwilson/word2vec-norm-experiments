@@ -5,15 +5,14 @@ import pandas as pd
 from collections import defaultdict
 from parameters import random_seed, experiment_word_occurrence_min
 
-def count_words(filename):
+def count_words(f):
     """
     Return a dictionary mapping each word to its occurrence count in the file specified.
     Words are separated by ' '.
     """
     counts = defaultdict(lambda: 0)
-    with open(filename) as f:
-        for line in f:
-            for word in line.split(' '):
+    for line in f:
+        for word in line.split(' '):
                 counts[word] += 1
     return counts
 
@@ -39,7 +38,7 @@ def truncated_geometric_sampling(word, ratio, max_value):
     probs = np.array([truncated_geometric_proba(ratio, i, max_value) for i in range(1, max_value + 1)])
     return lambda: np.random.choice(outcomes, p=probs)
 
-def intersperse_words(interspersal_rates, in_filename, out_filename):
+def intersperse_words(interspersal_rates, f_in, f_out):
     """
     Insperse words uniformly at random throughout the text in 'in_filename',
     writing the result to 'out_filename'.  'interspersal_rates' is a dict
@@ -48,7 +47,7 @@ def intersperse_words(interspersal_rates, in_filename, out_filename):
 
     Our use of this function in the experiments assumes that total number of
     words remains essentially unchanged.
-    """
+    """ #FIXME update doc
     insertion_proba = sum(interspersal_rates.values())
     insertion_words = interspersal_rates.keys()
     relative_probas = np.array([interspersal_rates[word] for word in insertion_words]) / insertion_proba
@@ -58,32 +57,30 @@ def intersperse_words(interspersal_rates, in_filename, out_filename):
     def must_insert():
         return random.random() < insertion_proba
     
-    with open(in_filename) as f_in, open(out_filename, 'w') as f_out:
-        for line in f_in:
-            words_out = []
-            for word in line.strip().split(' '):
-                if must_insert():
-                    words_out.append(sample_insertion_word())
-                words_out.append(word)
-            print(' '.join(words_out), file=f_out)
+    for line in f_in:
+        words_out = []
+        for word in line.strip().split(' '):
+            if must_insert():
+                words_out.append(sample_insertion_word())
+            words_out.append(word)
+        print(' '.join(words_out), file=f_out)
 
-def replace_words(word_sampler_dict, in_filename, out_filename):
+def replace_words(word_sampler_dict, f_in, f_out):
     """
     Performs a replacement procedure on the text in 'in_filename', writing the
     results to 'out_filename'.  'word_sampler_dict' is a dict mapping words to
     be replaced to functions (without arguments) that return their replacement.
     e.g. word_sampler_dict = {'cat': truncated_geometric_proba('cat', 0.5, 20)} 
-    """
-    with open(in_filename) as f_in, open(out_filename, 'w') as f_out:
-        for line in f_in:
-            words_out = []
-            for word in line.strip().split(' '):
-                if word in word_sampler_dict:
-                    sampler = word_sampler_dict[word]
-                    word = sampler()
-                if word is not None:
-                    words_out.append(word)
-            print(' '.join(words_out), file=f_out)
+    """ #FIXME update doc
+    for line in f_in:
+        words_out = []
+        for word in line.strip().split(' '):
+            if word in word_sampler_dict:
+                sampler = word_sampler_dict[word]
+                word = sampler()
+            if word is not None:
+                words_out.append(word)
+        print(' '.join(words_out), file=f_out)
 
 def load_word2vec_binary(fname):
     """

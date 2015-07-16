@@ -33,12 +33,13 @@ if __name__ == '__main__':
                              squeeze=True,
                              chunksize=1000)
     for chunk in doc_chunks:
-        decoded = chunk.str.decode('utf-8').fillna(u'')
-        decoded = decoded.apply(unescape_line_breaks)
+        chunk = chunk.str.decode('utf-8').fillna(u'')
+        chunk = chunk.apply(unescape_line_breaks)
+        for _, text in chunk.iteritems():
         try:
             if not args.case_sensitive:
-                decoded = decoded.lower()
-            tokens = tokenizer.findall(decoded)
+                text = text.lower()
+            tokens = tokenizer.findall(text)
             cleaned = u' '.join(tokens)
             print cleaned.encode('utf-8')
         except ValueError as e:
