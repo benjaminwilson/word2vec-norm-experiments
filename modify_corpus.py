@@ -33,19 +33,6 @@ with file(filenames['coocc_noise_experiment_words'], 'w') as f:
     for word in words_experiment_2:
         print('%s,%i' % (word, counts[word]), file=f)
 
-# intersperse the meaningless token throughout the corpus
-with open(filenames['corpus_unmodified']) as f_in, open(intermediate_file, 'w') as f_out:
-    intersperse_words({meaningless_token: meaningless_token_frequency}, f_in, f_out)
-words_experiment_1.append(meaningless_token)
-
-# concatenate many occurrences of the onehot token to the end of the corpus
-num_to_insert = int(onehot_token_frequency * total_words)
-with open(intermediate_file, 'a') as f_out:
-    for _ in xrange(num_to_insert):
-        f_out.write(onehot_token)
-        f_out.write(' ')
-words_experiment_1.append(onehot_token)
-
 # perform the replacement procedures for the word frequency and the noise cooccurrence experiments
 word_samplers = {}
 for word in words_experiment_1:
