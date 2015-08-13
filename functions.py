@@ -16,6 +16,28 @@ def count_words(f):
                 counts[word] += 1
     return counts
 
+def read_words(filename):
+    """
+    given a CSV of word counts, returns the list of words.
+    """
+    words = []
+    with file(filename) as f:
+        for line in f:
+            word = line.split(',')[0]
+            words.append(word)
+    return words
+
+def read_word_counts(filename):
+    """
+    given a CSV of word counts, returns a word count dictionary.
+    """
+    counts = dict()
+    with file(filename) as f:
+        for line in f:
+            word, count = line.strip().split(',')
+            counts[word] = int(count)
+    return dict
+
 def build_experiment_token(word, sample):
     """
     e.g. ('cat', 3) -> CAT_3
@@ -111,4 +133,13 @@ def load_word2vec_binary(fname):
             vectors[line_no] = vector
     return pd.DataFrame(vectors, index=vocab)
 
+def cosine_similarity_heatmap(test_vecs, **kwargs):
+    test_vecs_normed = test_vecs.as_matrix() / np.sqrt((test_vecs ** 2).sum(axis=1))[:,np.newaxis]
+    mat = test_vecs_normed.dot(test_vecs_normed.transpose())    
+    plt.figure(**kwargs)
+    plt.title('Dot product of normalised word vectors')
+    plt.pcolor(mat, vmin=-1, vmax=1)
+    plt.colorbar()
+    _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index)
+    _ = plt.xticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index, rotation=90)
 

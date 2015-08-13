@@ -12,21 +12,10 @@ directory = os.path.dirname(os.path.realpath(__file__))
 filenames = dict()
 execfile(os.path.join(directory, 'filenames.sh'), filenames)
 
-def read_words(filename):
-    words = []
-    with file(filename) as f:
-        for line in f:
-            word = line.split(',')[0]
-            words.append(word)
-
-wf_experiment_words = read_words(filenames['word_frequency_experiment_words']) #FIXME change names
+wf_experiment_words = read_words(filenames['word_freq_experiment_words'])
 cn_experiment_words = read_words(filenames['coocc_noise_experiment_words'])
 
-counts = dict()
-with file(filenames['word_counts']) as f:
-    for line in f:
-        word, count = line.strip().split(',')
-        counts[word] = int(count)
+counts = read_word_counts(filenames['word_counts_unmodified_corpus'])
 total_words = sum(counts.values())
 
 # intersperse the meaningless token throughout the corpus
