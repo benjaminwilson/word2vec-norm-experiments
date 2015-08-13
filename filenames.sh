@@ -1,6 +1,7 @@
 corpus_unmodified="outputs/corpus-unmodified.txt"
 corpus_modified="outputs/corpus-modified.txt"
-word_counts="outputs/word_counts_unmodified_corpus.csv"
+word_counts_unmodified_corpus="outputs/word_counts_unmodified_corpus.csv"
+word_counts_modified_corpus="outputs/word_counts_modified_corpus.csv"
 vectors_binary="outputs/vectors.bin"
 word_freq_experiment_words="outputs/word_freq_experiment_words"
 coocc_noise_experiment_words="outputs/coocc_noise_experiment_words"

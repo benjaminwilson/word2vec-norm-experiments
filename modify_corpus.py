@@ -22,7 +22,7 @@ total_words = sum(counts.values())
 intermediate_file = 'delete.me'
 with open(filenames['corpus_unmodified']) as f_in, open(intermediate_file, 'w') as f_out:
     intersperse_words({meaningless_token: meaningless_token_frequency}, f_in, f_out)
-word_frequency_experiment_words.append(meaningless_token)
+wf_experiment_words.append(meaningless_token)
 
 # perform the replacement procedures for the word frequency and the noise cooccurrence experiments
 word_samplers = {}

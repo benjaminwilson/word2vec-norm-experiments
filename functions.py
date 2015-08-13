@@ -2,6 +2,7 @@ from __future__ import print_function
 import random
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from collections import defaultdict
 from parameters import random_seed, experiment_word_occurrence_min
 
@@ -36,7 +37,7 @@ def read_word_counts(filename):
         for line in f:
             word, count = line.strip().split(',')
             counts[word] = int(count)
-    return dict
+    return counts
 
 def build_experiment_token(word, sample):
     """

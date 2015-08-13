@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-import matplotlib
+import matplotlib; matplotlib.use('Agg') # must be set before importing pyplot
 import matplotlib.pyplot as plt
 import random
 
@@ -24,7 +24,8 @@ norms_syn1neg = np.sqrt((vectors_syn1neg ** 2).sum(axis=1))
 vocab = list(vectors_syn0.index)
 
 # Calculate frequencies in the modified corpus
-counts = read_word_counts(filenames['word_counts_modified_corpus'])
+new_counts = read_word_counts(filenames['word_counts_modified_corpus'])
+total_words = sum(new_counts.values())
 
 stats = pd.DataFrame({'occurrences': new_counts, 'L2_norm_syn0': norms_syn0, 'L2_norm_syn1neg': norms_syn1neg}).dropna()
 stats['occurrences_band'] = np.floor(np.log2(stats.occurrences)).astype(int)
@@ -38,7 +39,7 @@ band_counts.index.name = 'log2 (# occurrences)'
 _ = band_counts.plot(kind='bar')
 plt.title('Number of words in each occurrence count band', y=1.08)
 plt.tight_layout()
-plt.savefig('occurrence-histogram.eps')
+plt.savefig('outputs/occurrence-histogram.eps')
 
 band_gb = stats.groupby('occurrences_band')
 means = band_gb.L2_norm_syn0.mean()
@@ -57,12 +58,12 @@ _ = ax.set_ylabel('L2 norm')
 
 plt.title('Mean and Std. of norm as function of # occurrences', y=1.04)
 plt.legend(['syn0 vectors', 'syn1neg vectors'])
-plt.savefig('frequency-norm-graph.eps')
+plt.savefig('outputs/frequency-norm-graph.eps')
 
 # scatter plot of syn0 norm vs frequency for a sample of ordinary (non-experiment-) words
 fig = plt.figure(figsize=(16, 8))
 non_experiment_words = [word for word in stats.index if word != word.upper()]
-sample = stats.loc[random.sample(non_experiment_words, 20000)]
+sample = stats.loc[random.sample(non_experiment_words, 15000)]
 plt.scatter(sample.occurrences, sample.L2_norm_syn0, s=0.2)
 plt.xscale('log')
 plt.ylim(0, 50)
@@ -70,7 +71,7 @@ plt.xlim(200, 10 ** 7)
 plt.title('Frequency vs vector length', y=1.04).set_fontsize(30)
 plt.xlabel('# occurrences').set_fontsize(30)
 plt.ylabel('L2 norm (syn0)').set_fontsize(30)
-plt.savefig('frequency-norm-scatterplot.eps')
+plt.savefig('outputs/frequency-norm-scatterplot.eps')
 
 
 def set_num_plots(num_plots):
@@ -94,21 +95,21 @@ def plot_word_freq_experiment_norm_vs_freq(norms_vs_freq):
     for word in word_freq_experiment_words:
         plot_for_word(word)
 
-    _ = plt.legend(plot_words, loc='upper right')
+    _ = plt.legend(word_freq_experiment_words, loc='upper right')
     plt.tight_layout()
 
 
 plot_word_freq_experiment_norm_vs_freq(stats.L2_norm_syn0)
-plt.savefig('word-frequency-experiment-graph-syn0.eps')
+plt.savefig('outputs/word-frequency-experiment-graph-syn0.eps')
 
 plot_word_freq_experiment_norm_vs_freq(stats.L2_norm_syn1neg)
-plt.savefig('word-frequency-experiment-graph-syn1neg.eps')
+plt.savefig('outputs/word-frequency-experiment-graph-syn1neg.eps')
 
 test_words = random.sample(word_freq_experiment_words, 4)
 idxs = [build_experiment_token(word, i) for word in test_words for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
 test_vecs = vectors_syn0.loc[idxs].dropna()
 cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
-plt.savefig('word-frequency-experiment-heatmap.eps')
+plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
 
 
 ## Co-occurrence noise experiment
@@ -136,11 +137,11 @@ def plot_coocc_noise_experiment_norm_vs_freq(norms_vs_freq):
 
 plot_coocc_noise_experiment_norm_vs_freq(stats.L2_norm_syn0)
 plt.ylim(0, 15)
-plt.savefig('cooccurrence-noise-graph-syn0.eps')
+plt.savefig('outputs/cooccurrence-noise-graph-syn0.eps')
 
 plot_coocc_noise_experiment_norm_vs_freq(stats.L2_norm_syn1neg)
 plt.ylim((0,15))
-plt.savefig('cooccurrence-noise-graph-syn1neg.eps')
+plt.savefig('outputs/cooccurrence-noise-graph-syn1neg.eps')
 
 
 idxs = []
@@ -151,4 +152,4 @@ for word in random.sample(coocc_noise_experiment_words, 4):
 meaningless_vec = vectors_syn0.loc[build_experiment_token(meaningless_token, 1)]
 test_vecs = vectors_syn0.loc[idxs].dropna() - meaningless_vec
 cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
-plt.savefig('cooccurrence-noise-heatmap.eps')
+plt.savefig('outputs/cooccurrence-noise-heatmap.eps')
