@@ -17,8 +17,11 @@ $(corpus_unmodified):
 	wget -qO- $(source_corpus_url) | gunzip -c | python clean_corpus.py > $(corpus_unmodified)
 $(word_counts_unmodified_corpus): $(corpus_unmodified)
 	cat $(corpus_unmodified) | python count_words.py > $(word_counts)	
-$(word_freq_experiment_words) $(coocc_noise_experiment_words): $(word_counts)
-	python choose_experiment_words.py
+$(word_freq_experiment_words): $(word_counts)
+	cat $(word_counts) | python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words)
+	echo 'the' >> $(word_freq_experiment_words)
+$(coocc_noise_experiment_words): $(word_counts)
+	cat $(word_counts) | python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words)
 $(corpus_modified): $(corpus_unmodified) $(word_counts) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 	python modify_corpus.py
 $(word_counts_modified_corpus): $(corpus_modified)

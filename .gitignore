@@ -3,3 +3,4 @@ corpus-modified.txt
 corpus-unmodified.txt
 vectors.bin
 vectors.bin.syn1neg
+word2vec

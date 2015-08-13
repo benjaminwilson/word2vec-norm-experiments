@@ -3,7 +3,6 @@ Modifies an input text for the experiments according to the parameters defined i
 Assumes the filenames from filenames.sh
 Requires sufficient diskspace to write out the modified text at intermediate steps.
 """
-from __future__ import print_function
 import os
 from parameters import *
 from functions import *
@@ -15,7 +14,8 @@ execfile(os.path.join(directory, 'filenames.sh'), filenames)
 wf_experiment_words = read_words(filenames['word_freq_experiment_words'])
 cn_experiment_words = read_words(filenames['coocc_noise_experiment_words'])
 
-counts = read_word_counts(filenames['word_counts_unmodified_corpus'])
+with file(filenames['word_counts_unmodified_corpus']) as f:
+    counts = read_word_counts(f)
 total_words = sum(counts.values())
 
 # intersperse the meaningless token throughout the corpus

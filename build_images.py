@@ -24,7 +24,8 @@ norms_syn1neg = np.sqrt((vectors_syn1neg ** 2).sum(axis=1))
 vocab = list(vectors_syn0.index)
 
 # Calculate frequencies in the modified corpus
-new_counts = read_word_counts(filenames['word_counts_modified_corpus'])
+with file(filenames['word_counts_modified_corpus']) as f:
+    new_counts = read_word_counts(f)
 total_words = sum(new_counts.values())
 
 stats = pd.DataFrame({'occurrences': new_counts, 'L2_norm_syn0': norms_syn0, 'L2_norm_syn1neg': norms_syn1neg}).dropna()
@@ -78,34 +79,47 @@ def set_num_plots(num_plots):
     colormap = plt.cm.gist_ncar
     plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, num_plots)])
 
+words = word_freq_experiment_words
+fig = plt.figure(figsize=(16, 6))
+colormap = plt.cm.gist_ncar
+colorcycle = [colormap(i) for i in np.linspace(0, 0.9, len(words))]
 
-def plot_word_freq_experiment_norm_vs_freq(norms_vs_freq):
-    plt.figure(figsize=(7, 7))
-    plt.title('Norm of word vector when word frequency is varied', y=1.04)
-    plt.xlabel('log2 (# occurrences)')
-    plt.ylabel(norms_vs_freq.name)
-    set_num_plots(len(word_freq_experiment_words))
+ax_syn0 = plt.subplot(131)
+ax_syn0.set_xlabel('# occurrences')
+ax_syn0.set_ylabel('L2 norm')
+ax_syn0.set_xscale('log')
+ax_syn0.set_color_cycle(colorcycle)
+ax_syn0.set_title('syn0', y=1.04)
 
-    def plot_for_word(word, **kwargs):
-        idxs = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
-        x = np.log2(stats.loc[idxs].occurrences)
-        y = norms_vs_freq.loc[idxs]
-        plt.plot(x, y, marker='o', **kwargs)
+ax_syn1neg = plt.subplot(132, sharex=ax_syn0, sharey=ax_syn0)
+ax_syn1neg.set_xlabel('# occurrences')
+ax_syn1neg.set_color_cycle(colorcycle)
+ax_syn1neg.set_title('syn1neg', y=1.04)
+    
+def plot_for_word(ax, word, series, **kwargs):
+    idxs = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
+    x = stats.loc[idxs].occurrences
+    y = series.loc[idxs]
+    return ax.plot(x, y, marker='o', **kwargs)[0]
 
-    for word in word_freq_experiment_words:
-        plot_for_word(word)
+lines = []
+set_num_plots(len(words))
+for word in words:
+    lines.append(plot_for_word(ax_syn0, word, stats.L2_norm_syn0))
 
-    _ = plt.legend(word_freq_experiment_words, loc='upper right')
-    plt.tight_layout()
+set_num_plots(len(words))
+for word in words:
+    plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
+
+ax_syn0.set_ylim(0, 35)
+
+_ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
+plt.tight_layout()
+
+plt.savefig('outputs/word-frequency-experiment-graph.eps')
 
 
-plot_word_freq_experiment_norm_vs_freq(stats.L2_norm_syn0)
-plt.savefig('outputs/word-frequency-experiment-graph-syn0.eps')
-
-plot_word_freq_experiment_norm_vs_freq(stats.L2_norm_syn1neg)
-plt.savefig('outputs/word-frequency-experiment-graph-syn1neg.eps')
-
-test_words = random.sample(word_freq_experiment_words, 4)
+test_words = random.sample(word_freq_experiment_words, 4) + ['the', meaningless_token]
 idxs = [build_experiment_token(word, i) for word in test_words for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
 test_vecs = vectors_syn0.loc[idxs].dropna()
 cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
@@ -114,34 +128,45 @@ plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
 
 ## Co-occurrence noise experiment
 
-def plot_coocc_noise_experiment_norm_vs_freq(norms_vs_freq):
-    plt.figure(figsize=(7, 7))
-    plt.title('Norm when noise added to cooccurrence distribution', y=1.02)
-    plt.xlabel('Proportion of noise occurrences')
-    plt.ylabel(norms_vs_freq.name)
+words = coocc_noise_experiment_words
+fig = plt.figure(figsize=(16, 6))
+colormap = plt.cm.gist_ncar
+colorcycle = [colormap(i) for i in np.linspace(0, 0.9, len(words))]
 
-    plt.xlim(0, 1)
-    set_num_plots(len(coocc_noise_experiment_words))
-    def plot_for_word(word, **kwargs):
-        exponents = filter(lambda i: build_experiment_token(word, i) in stats.index, range(1, coocc_noise_experiment_power_max + 1))
-        idxs = [build_experiment_token(word, i) for i in exponents]
-        x = [1 - coocc_noise_experiment_ratio ** exponent for exponent in exponents]
-        y = norms_vs_freq.loc[idxs]
-        plt.plot(x, y, marker='o', **kwargs)
+ax_syn0 = plt.subplot(131)
+ax_syn0.set_xlabel('Proportion of noise occurrences')
+ax_syn0.set_ylabel('L2 norm')
+ax_syn0.set_color_cycle(colorcycle)
+ax_syn0.set_title('syn0', y=1.04)
 
-    for word in coocc_noise_experiment_words:
-        plot_for_word(word)
+ax_syn1neg = plt.subplot(132, sharex=ax_syn0, sharey=ax_syn0)
+ax_syn1neg.set_xlabel('Proportion of noise occurrences')
+ax_syn1neg.set_color_cycle(colorcycle)
+ax_syn1neg.set_title('syn1neg', y=1.04)
+    
+def plot_for_word(ax, word, series, **kwargs):
+    exponents = filter(lambda i: build_experiment_token(word, i) in stats.index, range(1, coocc_noise_experiment_power_max + 1))
+    idxs = [build_experiment_token(word, i) for i in exponents]
+    x = [1 - coocc_noise_experiment_ratio ** exponent for exponent in exponents]
+    y = series.loc[idxs]
+    return ax.plot(x, y, marker='o', **kwargs)[0]
 
-    _ = plt.legend(coocc_noise_experiment_words, loc='upper right')
-    plt.tight_layout()
+lines = []
+set_num_plots(len(words))
+for word in words:
+    lines.append(plot_for_word(ax_syn0, word, stats.L2_norm_syn0))
 
-plot_coocc_noise_experiment_norm_vs_freq(stats.L2_norm_syn0)
-plt.ylim(0, 15)
-plt.savefig('outputs/cooccurrence-noise-graph-syn0.eps')
+set_num_plots(len(words))
+for word in words:
+    plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-plot_coocc_noise_experiment_norm_vs_freq(stats.L2_norm_syn1neg)
-plt.ylim((0,15))
-plt.savefig('outputs/cooccurrence-noise-graph-syn1neg.eps')
+ax_syn0.set_ylim(0, 12)
+ax_syn0.set_xlim(0, 1)
+
+_ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
+plt.tight_layout()
+
+plt.savefig('outputs/cooccurrence-noise-graph.eps')
 
 
 idxs = []
