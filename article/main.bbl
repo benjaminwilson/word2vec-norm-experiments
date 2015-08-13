@@ -1,0 +1,20 @@
+\begin{thebibliography}{1}
+
+\bibitem{EfficientEstimation}
+Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean.
+\newblock Efficient estimation of word representations in vector space.
+\newblock {\em CoRR}, abs/1301.3781, 2013.
+
+\bibitem{DistRepns}
+Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg Corrado, and Jeffrey Dean.
+\newblock Distributed representations of words and phrases and their
+  compositionality.
+\newblock {\em CoRR}, abs/1310.4546, 2013.
+
+\bibitem{Arora2015}
+Sanjeev Arora, Yuanzhi Li, Yingyu Liang, Tengyu Ma, and Andrej Risteski.
+\newblock Random walks on context spaces: Towards an explanation of the
+  mysteries of semantic word embeddings.
+\newblock {\em CoRR}, abs/1502.03520, 2015.
+
+\end{thebibliography}

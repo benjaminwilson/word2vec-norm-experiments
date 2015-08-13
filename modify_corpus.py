@@ -24,6 +24,7 @@ print('Total words in corpus : %i' % total_words)
 frequent_words = [word for word in counts if counts[word] > experiment_word_occurrence_min]
 random.seed(random_seed)
 words_experiment_1, words_experiment_2 = [random.sample(frequent_words, number_of_experiment_words) for _ in range(2)]
+words_experiment_1.append('the') # should be unicode?
 
 with file(filenames['word_freq_experiment_words'], 'w') as f:
     for word in words_experiment_1:

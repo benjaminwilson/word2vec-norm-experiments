@@ -1,9 +1,5 @@
 *.pyc
-*.eps
-*.svg
-coocc_noise_experiment_words
 corpus-modified.txt
 corpus-unmodified.txt
 vectors.bin
 vectors.bin.syn1neg
-word_freq_experiment_words
