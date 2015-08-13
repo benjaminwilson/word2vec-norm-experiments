@@ -12,7 +12,7 @@ def count_words(f):
     """
     counts = defaultdict(lambda: 0)
     for line in f:
-        for word in line.split(' '):
+        for word in line.strip().split(' '):
                 counts[word] += 1
     return counts
 

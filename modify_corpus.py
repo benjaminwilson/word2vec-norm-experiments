@@ -1,7 +1,6 @@
 """
 Modifies an input text for the experiments according to the parameters defined in parameters.py
 Assumes the filenames from filenames.sh
-Writes out files listing the words chosen.
 Requires sufficient diskspace to write out the modified text at intermediate steps.
 """
 from __future__ import print_function
@@ -10,35 +9,37 @@ from parameters import *
 from functions import *
 
 directory = os.path.dirname(os.path.realpath(__file__))
-
 filenames = dict()
 execfile(os.path.join(directory, 'filenames.sh'), filenames)
 
-intermediate_file = 'delete.me'
+def read_words(filename):
+    words = []
+    with file(filename) as f:
+        for line in f:
+            word = line.split(',')[0]
+            words.append(word)
 
-with file(filenames['corpus_unmodified']) as f:
-    counts = count_words(f)
+wf_experiment_words = read_words(filenames['word_frequency_experiment_words']) #FIXME change names
+cn_experiment_words = read_words(filenames['coocc_noise_experiment_words'])
+
+counts = dict()
+with file(filenames['word_counts']) as f:
+    for line in f:
+        word, count = line.strip().split(',')
+        counts[word] = int(count)
 total_words = sum(counts.values())
-print('Total words in corpus : %i' % total_words)
 
-frequent_words = [word for word in counts if counts[word] > experiment_word_occurrence_min]
-random.seed(random_seed)
-words_experiment_1, words_experiment_2 = [random.sample(frequent_words, number_of_experiment_words) for _ in range(2)]
-words_experiment_1.append('the') # should be unicode?
-
-with file(filenames['word_freq_experiment_words'], 'w') as f:
-    for word in words_experiment_1:
-        print('%s,%i' % (word, counts[word]), file=f)
-
-with file(filenames['coocc_noise_experiment_words'], 'w') as f:
-    for word in words_experiment_2:
-        print('%s,%i' % (word, counts[word]), file=f)
+# intersperse the meaningless token throughout the corpus
+intermediate_file = 'delete.me'
+with open(filenames['corpus_unmodified']) as f_in, open(intermediate_file, 'w') as f_out:
+    intersperse_words({meaningless_token: meaningless_token_frequency}, f_in, f_out)
+word_frequency_experiment_words.append(meaningless_token)
 
 # perform the replacement procedures for the word frequency and the noise cooccurrence experiments
 word_samplers = {}
-for word in words_experiment_1:
+for word in wf_experiment_words:
     word_samplers[word] = truncated_geometric_sampling(word, word_freq_experiment_ratio, word_freq_experiment_power_max)
-for word in words_experiment_2:
+for word in cn_experiment_words:
     word_samplers[word] = truncated_geometric_sampling(word, coocc_noise_experiment_ratio, coocc_noise_experiment_power_max)
 
 tmp_file = 'delete.me.2'
@@ -47,9 +48,9 @@ with open(intermediate_file) as f_in, open(tmp_file, 'w') as f_out:
 os.remove(intermediate_file)
 intermediate_file = tmp_file
 
-# add noise to the cooccurrence distributions of experiment 2 words
+# add noise to the cooccurrence distributions
 token_freq_dict = dict()
-for word in words_experiment_2:
+for word in cn_experiment_words:
     target_freq = counts[word] * 1. / total_words
     for i in range(1, coocc_noise_experiment_power_max + 1):
         current_freq = target_freq * truncated_geometric_proba(coocc_noise_experiment_ratio, i, coocc_noise_experiment_power_max)

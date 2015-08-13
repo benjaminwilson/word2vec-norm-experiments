@@ -1,7 +1,0 @@
-#!/bin/bash
-DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-source $DIR/filenames.sh
-
-$DIR/download_corpus
-python $DIR/modify_corpus.py
-word2vec/word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output "$vectors_binary" -train $corpus_modified
