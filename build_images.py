@@ -3,28 +3,31 @@ import pandas as pd
 import matplotlib; matplotlib.use('Agg') # must be set before importing pyplot
 import matplotlib.pyplot as plt
 import random
+import sys
 
 from parameters import *
 from functions import *
 
-filenames = dict()
-execfile('filenames.sh', filenames)
+vectors_syn0_filename = sys.argv[1]
+vectors_syn1neg_filename = sys.argv[2]
+word_counts_filename = sys.argv[3]
+word_freq_exp_words_filename = sys.argv[4]
+coocc_noise_exp_words_filename = sys.argv[5]
 
 matplotlib.rcParams.update({'font.size': 14})
 
-word_freq_experiment_words = read_words(filenames['word_freq_experiment_words'])
-coocc_noise_experiment_words = read_words(filenames['coocc_noise_experiment_words'])
+word_freq_experiment_words = read_words(word_freq_exp_words_filename)
+coocc_noise_experiment_words = read_words(coocc_noise_exp_words_filename)
 
-vectors_syn0 = load_word2vec_binary(filenames['vectors_binary'])
+vectors_syn0 = load_word2vec_binary(vectors_syn0_filename)
 norms_syn0 = np.sqrt((vectors_syn0 ** 2).sum(axis=1))
 
-vectors_syn1neg = load_word2vec_binary(filenames['vectors_binary'] + '.syn1neg')
+vectors_syn1neg = load_word2vec_binary(vectors_syn1neg_filename)
 norms_syn1neg = np.sqrt((vectors_syn1neg ** 2).sum(axis=1))
 
 vocab = list(vectors_syn0.index)
 
-# Calculate frequencies in the modified corpus
-with file(filenames['word_counts_modified_corpus']) as f:
+with file(word_counts_filename) as f:
     new_counts = read_word_counts(f)
 total_words = sum(new_counts.values())
 

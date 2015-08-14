@@ -1,5 +1,3 @@
-include filenames.sh
-source_corpus_url="http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz"
 CC=gcc
 CFLAGS=-lm -pthread -O3 -march=native -Wall -funroll-loops -Wno-unused-result
 corpus_unmodified=outputs/corpus-unmodified.txt
@@ -14,27 +12,39 @@ coocc_noise_experiment_words=outputs/coocc_noise_experiment_words
 all: $(vectors_binary)
 
 $(corpus_unmodified):
-	wget -qO- $(source_corpus_url) | gunzip -c | python clean_corpus.py > $(corpus_unmodified)
+	wget -qO- http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz \
+		| gunzip -c \
+		| python clean_corpus.py \
+		> $(corpus_unmodified)
 $(word_counts_unmodified_corpus): $(corpus_unmodified)
-	cat $(corpus_unmodified) | python count_words.py > $(word_counts)	
+	python count_words.py > $(word_counts) < $(corpus_unmodified)	
 $(word_freq_experiment_words): $(word_counts)
-	cat $(word_counts) | python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words)
+	python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words) < $(word_counts)
 	echo 'the' >> $(word_freq_experiment_words)
 $(coocc_noise_experiment_words): $(word_counts)
-	cat $(word_counts) | python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words)
-$(corpus_modified): $(corpus_unmodified) $(word_counts) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
-	python modify_corpus.py
+	python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words) < $(word_counts)
+$(corpus_modified): $(corpus_unmodified) $(word_counts_unmodified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
+	cat $(corpus_unmodified) \
+		| python modify_corpus_word_freq_experiment.py $(word_freq_experiment_words) $(word_counts_unmodified_corpus) \
+		| python modify_corpus_coocc_noise_experiment.py $(coocc_noise_experiment_words) $(word_counts_unmodified_corpus) \
+		> $(corpus_modifed)
 $(word_counts_modified_corpus): $(corpus_modified)
-	cat $(corpus_modified) | python count_words.py > $(word_counts_modified_corpus)	
+	 python count_words.py > $(word_counts_modified_corpus) > $(corpus_modified)
 word2vec: word2vec.c
 	$(CC) word2vec.c -o word2vec $(CFLAGS)
 $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)
 	./word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary) -train $(corpus_modified)
 
-.PHONY: clean images
+.PHONY: clean images article talk
 images: $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus)
-	python build_images.py
+	python build_images.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 clean:
 	rm $(corpus_modified)
 	rm $(vectors_binary_syn0)
 	rm $(vectors_binary_syn1neg)
+article:
+	python markup_wordcounts.py < $(word_freq_experiment_words) > article/word-frequency-experiment-counts.tex
+	python markup_wordcounts.py < $(coocc_noise_experiment_words) > article/noise-cooccurrence-experiment-counts.tex
+	cd article && latex main.tex && dvipdf main.dvi
+talk:
+	cd talk && pdflatex -shell-escape main.tex
