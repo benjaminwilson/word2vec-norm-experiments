@@ -18,7 +18,7 @@ word_samplers = {}
 for word in cn_experiment_words:
     word_samplers[word] = truncated_geometric_sampling(word, coocc_noise_experiment_ratio, coocc_noise_experiment_power_max)
 
-intermediate_file = 'delete.me'
+intermediate_file = 'delete.me.word_freq_experiment'
 with open(intermediate_file, 'w') as f_out:
     replace_words(word_samplers, sys.stdin, f_out)
 

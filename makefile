@@ -9,7 +9,7 @@ vectors_binary_syn1neg=outputs/vectors.bin.syn1neg
 word_freq_experiment_words=outputs/word_freq_experiment_words
 coocc_noise_experiment_words=outputs/coocc_noise_experiment_words
 
-all: $(vectors_binary)
+experiment: $(vectors_binary_syn0) $(vectors_binary_syn1neg)
 
 $(corpus_unmodified):
 	wget -qO- http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz \
@@ -17,23 +17,23 @@ $(corpus_unmodified):
 		| python clean_corpus.py \
 		> $(corpus_unmodified)
 $(word_counts_unmodified_corpus): $(corpus_unmodified)
-	python count_words.py > $(word_counts) < $(corpus_unmodified)	
-$(word_freq_experiment_words): $(word_counts)
-	python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words) < $(word_counts)
+	python count_words.py > $(word_counts_unmodified_corpus) < $(corpus_unmodified)	
+$(word_freq_experiment_words): $(word_counts_unmodified_corpus)
+	python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words) < $(word_counts_unmodified_corpus)
 	echo 'the' >> $(word_freq_experiment_words)
-$(coocc_noise_experiment_words): $(word_counts)
-	python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words) < $(word_counts)
+$(coocc_noise_experiment_words): $(word_counts_unmodified_corpus)
+	python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words) < $(word_counts_unmodified_corpus)
 $(corpus_modified): $(corpus_unmodified) $(word_counts_unmodified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 	cat $(corpus_unmodified) \
 		| python modify_corpus_word_freq_experiment.py $(word_freq_experiment_words) $(word_counts_unmodified_corpus) \
 		| python modify_corpus_coocc_noise_experiment.py $(coocc_noise_experiment_words) $(word_counts_unmodified_corpus) \
-		> $(corpus_modifed)
+		> $(corpus_modified)
 $(word_counts_modified_corpus): $(corpus_modified)
 	 python count_words.py > $(word_counts_modified_corpus) > $(corpus_modified)
 word2vec: word2vec.c
 	$(CC) word2vec.c -o word2vec $(CFLAGS)
 $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)
-	./word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary) -train $(corpus_modified)
+	./word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary_syn0) -train $(corpus_modified)
 
 .PHONY: clean images article talk
 images: $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus)

@@ -14,7 +14,7 @@ with file(sys.argv[2]) as f:
 total_words = sum(counts.values())
 
 # intersperse the meaningless token throughout the corpus
-intermediate_file = 'delete.me'
+intermediate_file = 'delete.me.coocc_experiment'
 with open(intermediate_file, 'w') as f_out:
     intersperse_words({meaningless_token: meaningless_token_frequency}, sys.stdin, f_out)
 wf_experiment_words.append(meaningless_token)
