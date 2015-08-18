@@ -1,8 +1,9 @@
-% compile using latex (xelatex seems to crop the figure strangley)
+% compile using latex (xelatex seems to crop the figure strangely)
 \documentclass{article} % For LaTeX2e
 \usepackage[dvips]{graphicx}
 \usepackage{nips14submit_e,times}
 \usepackage{hyperref}
+\usepackage{mdframed}
 %\usepackage{wrapfig}
 \usepackage{rotating}
 \usepackage[outdir=./]{epstopdf}
@@ -39,7 +40,7 @@
 
 \begin{abstract}
 	We introduce an experimental approach to studying the properties of word embeddings.
-	Controlled experiments, acheived by modification of the training corpus, permit the demonstration of direct, causal relationships between word properties and word vector direction and length.
+	Controlled experiments, achieved by modification of the training corpus, permit the demonstration of direct, causal relationships between word properties and word vector direction and length.
 	This approach is demonstrated in the case of the word2vec CBOW model with experiments that independently vary word frequency and word co-occurrence noise.
 	It is shown in this case that word vector length depends directly and essentially linearly on both word frequency and the level of noise in the co-occurrence distribution of the word.
 	In both cases, the coefficient of linearity depends upon the word.
@@ -53,8 +54,8 @@ The neighbouring words are treated as samples of the co-occurrence distribution 
 Viewed in this way, the word vectors of the word embedding are determined by the co-occurrence distributions and frequencies of the words in the corpus.
 
 In this short note, we perform experiments that illustrate the effect of these two determining pieces of information (the co-occurrence distribution and the word frequency) as they are varied independently of one another.
-This is acheived through the introduction of new tokens into the training corpus with varying frequencies and varying levels of noise in their co-occurrence distributions.
-The frequency and co-occurrence distributions of these introduced tokens are modelled on existing words in the corpus.
+This is achieved through the introduction of new tokens into the training corpus with varying frequencies and varying levels of noise in their co-occurrence distributions.
+The frequency and co-occurrence distributions of these introduced tokens are modeled on existing words in the corpus.
 
 We illustrate our approach in case of the word2vec CBOW model.
 However, these experiments (and other besides) could might equally well be performed for word embedding methods such as word2vec skip-gram \cite{DistRepns,EfficientEstimation}, GloVe \cite{pennington2014glove} and SENNA \cite{collobert-2011}.
@@ -69,7 +70,7 @@ We show furthermore that word vector direction does not vary with word frequency
 This short note is structured as follows.
 Section \ref{related-work} draws connections to related work, while Section \ref{corpus-and-model} describes the corpus and model used to illustrate the experiments.
 Section \ref{WFVE} describes controlled experiment for varying word frequency while holding the co-occurrence distribution fixed.
-Section \ref{CNVE}, in a complementary fashion, describes a controlled experiment for varying the level of noise in the cooccurrence distribution of a word, while holding the word frequency fixed.
+Section \ref{CNVE}, in a complementary fashion, describes a controlled experiment for varying the level of noise in the co-occurrence distribution of a word, while holding the word frequency fixed.
 Section \ref{future-directions} considers further questions and possible future directions.
 \end{section}
 
@@ -103,7 +104,7 @@ For recognisability, the tokens introduced into the corpus during the modificati
 
 For simplicity, only the word2vec CBOW word embedding with a single set of hyperparameters is considered.
 Specifically, a $100$-dimensional CBOW model is trained using negative sampling with 5 negative samples, a window size of $10$, a minimum word occurrence of $128$, and $10$ passes through the corpus.
-Subsampling was not used so that the influence of word frequency could be more clearly discerned.
+Sub-sampling was not used so that the influence of word frequency could be more clearly discerned.
 Identical experimental results were obtained using hierarchical softmax, but these are omitted for succinctness.
 The relatively high minimum word cut-off is chosen to ensure that word vectors receive a sufficient number of gradient updates to be meaningful.
 \textcolor{red}{This cut-off results in a vocabulary of $62025$ words (only unigrams were considered).}
@@ -157,11 +158,12 @@ Figure \ref{fig:word-frequency-counts} gives the number of occurrences of the wo
 	\caption{Occurrence counts for words chosen for the word frequency experiment. }
 \end{figure}
 
-\begin{figure}
+\begin{figure}\label{fig:word-frequency-experiment-text-cat}
+	\begin{mdframed}
 	\input{word-frequency-experiment-text-cat.tex}
+	\end{mdframed}
 	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEexisting}, where the
 	word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
-	\label{fig:word-frequency-experiment-text-cat}
 \end{figure}
 
 \end{subsection}
@@ -175,7 +177,9 @@ Figure \ref{fig:word-frequency-counts} gives the number of occurrences of the wo
 	Figure \ref{fig:word-frequency-experiment-text-void} shows the effect of this modifications on a sample text ($f = 0.05$ is used there for illustrative purposes).
 
 \begin{figure}\label{fig:word-frequency-experiment-text-void}
+	\begin{mdframed}
 	\input{word-frequency-experiment-text-void.tex}
+	\end{mdframed}
 	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEmeaningless}, where $\lambda=0.5$ and $n=20$. For illustrative purposes, the token \word{VOID} was here interspersed with a global frequency of $0.05$.}
 \end{figure}
 \end{subsection}
@@ -183,7 +187,7 @@ Figure \ref{fig:word-frequency-counts} gives the number of occurrences of the wo
 \subsection{Experimental results}
 Word frequency has no effect on word vector direction.
 Figure \ref{word-frequency-experiment-heatmap} shows the cosine similarity of the pairs of word vectors for the tokens introduced into the corpus.
-The cosine similarity measures the extent to which two vectors have the same direction, taking a maximum value of $1$ and a minimum value of $0$.
+The cosine similarity measures the extent to which two vectors have the same direction, taking a maximum value of $1$ and a minimum value of $-1$.
 Notice that the word vectors associated to tokens derived from meaningful tokens have the same direction.
 The same is true of the word vectors associated to the \word{VOID\_i} for $i$ \textcolor{red}{below $7$ or $8$}, but that the word vectors \word{VOID\_i} gradually diverge directionally for higher values of $i$.
 This demonstrates the difficulty of learning the co-occurrence distribution of $\word{VOID}$, the global frequency distribution.
@@ -194,7 +198,7 @@ It remains, therefore, to consider the effect of frequency variation on word vec
 Figure \ref{fig:frequency-norm-graph} illustrates the global relationship between vector length and word frequency.
 Figure \ref{fig:word-frequency-experiment-graph}, on the other hand, shows this relationship for individual words, both for the word vectors, ``syn0'' and for the discarded second layer vectors ``syn1neg'' (included for completeness).
 Each line corresponds to a single word, and the points on each line indicate the frequency and vector length for the tokens derived from the corresponding word.
-\textcolor{red}{For example, the five points on the line corresponding to \word{admiral} are labelled, from right to left, by the tokens \word{ADMIRAL\_1}, \word{ADMIRAL\_2}, \dots, \word{ADMIRAL\_5}.}
+\textcolor{red}{For example, the five points on the line corresponding to \word{admiral} are labeled, from right to left, by the tokens \word{ADMIRAL\_1}, \word{ADMIRAL\_2}, \dots, \word{ADMIRAL\_5}.}
 The number of points on the line is determined by the frequency of the original word.
 \textcolor{red}{For example, the frequency of the \word{admiral} can be halved at most $5$ times and remain about the minimum frequency cut-off.}
 
@@ -235,7 +239,7 @@ Therefore these lines trace lines along which a frequency-adjusted norm would be
 
 \begin{section}{Co-occurrence noise variation experiment}\label{CNVE}
 Here, and throughout, the noise distribution is taken to be the global word frequency distribution.
-Thus noise can be added to the co-occurrence distribution of a word by inspersing occurrences of that word uniformly at randomly throughout the corpus.
+Thus noise can be added to the co-occurrence distribution of a word by interspersing occurrences of that word uniformly at randomly throughout the corpus.
 A small set of words is chosen from the unmodified corpus in the same manner as in section \ref{WFVE}.
 
 For each of the chosen words, the replacement procedure of subsection \ref{replacement-procedure} is performed using a geometric rate of decay of $\lambda = 5/6$, and truncating at $n=8$.
@@ -248,9 +252,9 @@ Figure \ref{fig:co-occurrence-noise-experiment-text} illustrates the effect of t
 The original text in this case concerned both cats and dogs.
 Notice that the word \word{cat} has been replaced entirely in the cats section by occurrences of \word{CAT\_i} and moreover that occurrences of these same tokens appear also in the dogs section. These occurrences (and additionally, with probability, some occurrences from the cats section) are ``noise occurrences''.
 
-The proportion of the occurrences of \word{CAT\_i} that arose by replacing \word{cat} is $P_{5/6}(i)$, and the proportion arising from the random intersperal of this token throughout the corpus is $r_i := (1 - P_{5/6}(i))$.
+The proportion of the occurrences of \word{CAT\_i} that arose by replacing \word{cat} is $P_{5/6, 8}(i)$, and the proportion arising from the random interspersal of this token throughout the corpus is $r_i := (1 - P_{5/6, 8}(i))$.
 The particular value of $\lambda$ (large compared to that of section \ref{WFVE}) was chosen so that the proportion of noise $r_i$ did not increase too quickly with $i$.
-These proportions are the sampling points on our axis of variation, and this value of $\lambda$ (together with the choise of $n$) ensures a reasonable spread.
+These proportions are the sampling points on our axis of variation, and this value of $\lambda$ (together with the choice of $n$) ensures a reasonable spread.
 Note that other parameter values (or indeed other distributions) could equally have been used.
 
 \begin{figure}
@@ -260,7 +264,9 @@ Note that other parameter values (or indeed other distributions) could equally h
 \end{figure}
 
 \begin{figure}
+	\begin{mdframed}
 	\input{cooccurrence-noise-experiment.tex}
+	\end{mdframed}
 	\caption{A text modified for the co-occurrence noise experiment, where the word \word{cat} was chosen, $\lambda = 5/6$ and $n=3$.}
 \label{fig:co-occurrence-noise-experiment-text}
 \end{figure}
