@@ -150,7 +150,7 @@ def cosine_similarity_heatmap(test_vecs, **kwargs):
     test_vecs_normed = test_vecs.as_matrix() / np.sqrt((test_vecs ** 2).sum(axis=1))[:,np.newaxis]
     mat = test_vecs_normed.dot(test_vecs_normed.transpose())    
     plt.figure(**kwargs)
-    plt.title('Dot product of normalised word vectors')
+    plt.title('Cosine similarity of word vectors')
     plt.pcolor(mat, vmin=-1, vmax=1)
     plt.colorbar()
     _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index)

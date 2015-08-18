@@ -82,7 +82,7 @@ def set_num_plots(num_plots):
     colormap = plt.cm.gist_ncar
     plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, num_plots)])
 
-words = word_freq_experiment_words
+words = word_freq_experiment_words + [meaningless_token]
 fig = plt.figure(figsize=(16, 6))
 colormap = plt.cm.gist_ncar
 colorcycle = [colormap(i) for i in np.linspace(0, 0.9, len(words))]
@@ -114,7 +114,7 @@ set_num_plots(len(words))
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-ax_syn0.set_ylim(0, 35)
+ax_syn0.set_ylim(0, 45)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
 plt.tight_layout()
@@ -122,7 +122,8 @@ plt.tight_layout()
 plt.savefig('outputs/word-frequency-experiment-graph.eps')
 
 
-test_words = random.sample(word_freq_experiment_words, 4) + ['the', meaningless_token]
+test_words = random.sample([word for word in word_freq_experiment_words if word != 'the'], 3)
+test_words += ['the', meaningless_token]
 idxs = [build_experiment_token(word, i) for word in test_words for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
 test_vecs = vectors_syn0.loc[idxs].dropna()
 cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
