@@ -36,7 +36,7 @@ $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)
 	./word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary_syn0) -train $(corpus_modified)
 
 .PHONY: clean images article talk
-images: $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus)
+images:
 	python build_images.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 clean:
 	rm $(corpus_modified)
