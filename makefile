@@ -43,8 +43,8 @@ clean:
 	rm $(vectors_binary_syn0)
 	rm $(vectors_binary_syn1neg)
 article:
-	python markup_wordcounts.py < $(word_freq_experiment_words) > article/word-frequency-experiment-counts.tex
-	python markup_wordcounts.py < $(coocc_noise_experiment_words) > article/noise-cooccurrence-experiment-counts.tex
+	python article_markup_wordcounts.py < $(word_freq_experiment_words) > article/word-frequency-experiment-counts.tex
+	python article_markup_wordcounts.py < $(coocc_noise_experiment_words) > article/noise-cooccurrence-experiment-counts.tex
 	cd article && latex main.tex && dvipdf main.dvi
 talk:
 	cd talk && pdflatex -shell-escape main.tex

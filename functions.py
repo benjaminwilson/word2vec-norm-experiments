@@ -17,6 +17,19 @@ def count_words(f):
                 counts[word] += 1
     return counts
 
+def count_document_frequency(f, vocab):
+    """
+    Return a dictionary mapping each word to the number of documents it occurs
+    in, in the file 'f' specified.  Documents are separated from one another by
+    linefeeds.
+    Words are separated by ' '.
+    """
+    counts = {word: 0 for word in vocab}
+    for line in f:
+        for word in set(line.strip().split(' ')):
+                counts[word] += 1
+    return counts
+
 def read_words(filename):
     """
     given a CSV of word counts, returns the list of words.

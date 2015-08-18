@@ -94,6 +94,7 @@ Specifically, a $100$-dimensional CBOW model is trained using negative sampling 
 Subsampling was not used so that influence of word frequency could be more clearly discerned.
 Identical experimental results were obtained using hierarchical softmax, but these are omitted for succinctness.
 The relatively high minimum word cut-off is chosen to ensure that word vectors receive a sufficient number of gradient updates to be meaningful.
+This cut-off results in a vocabulary of $62025$ words (only unigrams were considered).
 
 The most recent revision of word2vec was used\footnote{SVN revision 42, see \url{http://word2vec.googlecode.com/svn/trunk/}}.
 The source code for performing the experiments is made available on GitHub\footnote{\url{https://github.com/benjaminwilson/word2vec-norm-experiments}}.
@@ -125,7 +126,7 @@ In this experiment, families of tokens are introduced into the corpus.
 The tokens in each family vary in frequency but share a common co-occurrence distribution.
 After model training, comparison of the resulting word vectors for these tokens reveals the independent effect of frequency variation on the word embedding.
 
-\begin{subsection}{Tokens derived from existing words}
+\begin{subsection}{Tokens derived from existing words}\label{WFVEexisting}
 A small set of words from the unmodified corpus is chosen uniformly at random from the vocabulary.
 In order that the introduced tokens do not have too low a frequency, only words which occur at least 10 thousand times are chosen.
 To this set of words we add the word \word{the}, in order to include a high-frequency stopword.
@@ -143,13 +144,14 @@ Figure \ref{fig:word-frequency-counts} gives the number of occurrences of the wo
 
 \begin{figure}
 	\input{word-frequency-experiment-text-cat.tex}
-	\caption{Text modified for the word frequency experiment, where the word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
+	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEexisting}, where the
+	word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
 	\label{fig:word-frequency-experiment-text-cat}
 \end{figure}
 
 \end{subsection}
 
-\begin{subsection}{Tokens derived from an introduced, meaningless word}
+\begin{subsection}{Tokens derived from an introduced, meaningless word}\label{WFVEmeaningless}
 	A high-frequency, purely meaningless word is included in the experiment for comparison.
 	We choose to introduce a new, entirely meaningless token \word{VOID} into the corpus, rather than choose an existing word whose meaninglessness is only supposed.
 	To achieve this, the token is interspersed uniformly at random throughout the corpus so that its global frequency is $0.005$.
@@ -159,8 +161,7 @@ Figure \ref{fig:word-frequency-experiment-text-void} illustrates the effect of t
 
 \begin{figure}\label{fig:word-frequency-experiment-text-void}
 	\input{word-frequency-experiment-text-void.tex}
-	\caption{Text modified for the word frequency experiment, where the
-	word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
+	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEmeaningless}, where $\lambda=0.5$ and $n=20$. For illustrative purposes, the token \word{VOID} was here interspersed with a global frequency of $0.05$.}
 \end{figure}
 \end{subsection}
 
@@ -231,10 +232,9 @@ Note that for the experiments, \emph{both} modification procedures are performed
 	\caption{Occurrence counts for words chosen for the cooccurrence noise experiment. }
 \end{figure}
 
-% original text after modifications for the noise experiment with n=3 lambda 5/ 6 for cat
 \begin{figure}
 	\input{cooccurrence-noise-experiment.tex}
-	\caption{Text modified for the co-occurrence noise experiment, where the word \word{cat} was chosen, $\lambda = 5/6$ and $n=3$.}
+	\caption{A text modified for the co-occurrence noise experiment, where the word \word{cat} was chosen, $\lambda = 5/6$ and $n=3$.}
 \label{fig:cooccurrence-noise-experiment-text}
 \end{figure}
 
