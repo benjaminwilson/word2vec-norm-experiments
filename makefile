@@ -9,7 +9,12 @@ vectors_binary_syn1neg=outputs/vectors.bin.syn1neg
 word_freq_experiment_words=outputs/word_freq_experiment_words
 coocc_noise_experiment_words=outputs/coocc_noise_experiment_words
 
+.PHONY: clean experiment
 experiment: $(vectors_binary_syn0) $(vectors_binary_syn1neg)
+clean:
+	rm $(corpus_modified)
+	rm $(vectors_binary_syn0)
+	rm $(vectors_binary_syn1neg)
 
 $(corpus_unmodified):
 	wget -qO- http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz \
@@ -29,22 +34,18 @@ $(corpus_modified): $(corpus_unmodified) $(word_counts_unmodified_corpus) $(word
 		| python modify_corpus_coocc_noise_experiment.py $(coocc_noise_experiment_words) $(word_counts_unmodified_corpus) \
 		> $(corpus_modified)
 $(word_counts_modified_corpus): $(corpus_modified)
-	 python count_words.py > $(word_counts_modified_corpus) > $(corpus_modified)
+	 python count_words.py > $(word_counts_modified_corpus) < $(corpus_modified)
 word2vec: word2vec.c
 	$(CC) word2vec.c -o word2vec $(CFLAGS)
 $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)
 	./word2vec -min-count 200 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary_syn0) -train $(corpus_modified)
 
-.PHONY: clean images article talk
-images:
+images: $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 	python build_images.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
-clean:
-	rm $(corpus_modified)
-	rm $(vectors_binary_syn0)
-	rm $(vectors_binary_syn1neg)
-article:
+	touch images
+article/main.pdf: images
 	python article_markup_wordcounts.py < $(word_freq_experiment_words) > article/word-frequency-experiment-counts.tex
 	python article_markup_wordcounts.py < $(coocc_noise_experiment_words) > article/noise-cooccurrence-experiment-counts.tex
 	cd article && latex main.tex && dvipdf main.dvi
-talk:
+talk/main.pdf:
 	cd talk && pdflatex -shell-escape main.tex
