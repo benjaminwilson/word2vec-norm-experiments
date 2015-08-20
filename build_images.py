@@ -37,50 +37,38 @@ stats['log2_frequency'] = np.log2(stats.occurrences * 1. / total_words)
 stats.L2_norm_syn0.name = 'L2 norm (syn0)'
 stats.L2_norm_syn1neg.name = 'L2 norm (syn1neg)'
 
-band_counts = stats.occurrences_band.dropna().value_counts().sort_index()
-band_counts.index.name = 'log2 (# occurrences)'
 
-_ = band_counts.plot(kind='bar')
-plt.title('Number of words in each occurrence count band', y=1.08)
-plt.tight_layout()
-plt.savefig('outputs/occurrence-histogram.eps')
+# WORD FREQUENCY EXPERIMENT
 
-band_gb = stats.groupby('occurrences_band')
-means = band_gb.L2_norm_syn0.mean()
-errors = band_gb.L2_norm_syn0.std()
-ax = means.plot(yerr=errors)
+def wf_experiment_tokens(word):
+    """
+    return the list of tokens introduced into the corpus in the word frequency
+    experiment for the given word.
+    """
+    idxs = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
+    return [idx for idx in idxs if idx in vectors_syn0.index]
 
-means = band_gb.L2_norm_syn1neg.mean()
-errors = band_gb.L2_norm_syn1neg.std()
-ax = means.plot(yerr=errors, figsize=(7,7))
+# cosine similarity heatmap
+test_words = random.sample([word for word in word_freq_experiment_words if word != 'the'], 4)
+test_words += ['the', meaningless_token]
+idxs = []
+for word in test_words:
+    idxs += wf_experiment_tokens(word)
+test_vecs = vectors_syn0.loc[idxs]
+cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
+plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
 
-_ = ax.set_xlim(7, 20)
-_ = ax.set_ylim(0, 60)
+# remove word vectors that are not well trained
+# drop those whose cosine similarity with word_1 is < 0.8
+for word in word_freq_experiment_words + [meaningless_token]:
+    idxs = wf_experiment_tokens(word) # ordered: word_1, word_2 ..
+    test_vecs = vectors_syn0.loc[idxs]
+    cs = cosine_similarity(test_vecs)
+    poorly_trained = [idx for i, idx in enumerate(idxs) if cs[0,i] < 0.8]
+    stats.drop(poorly_trained, axis=0, inplace=True)
+    vectors_syn0.drop(poorly_trained, axis=0, inplace=True)
+    vectors_syn1neg.drop(poorly_trained, axis=0, inplace=True)
 
-_ = ax.set_xlabel('log2 (# occurrences)')
-_ = ax.set_ylabel('L2 norm')
-
-plt.title('Mean and Std. of norm as function of # occurrences', y=1.04)
-plt.legend(['syn0 vectors', 'syn1neg vectors'])
-plt.savefig('outputs/frequency-norm-graph.eps')
-
-# scatter plot of syn0 norm vs frequency for a sample of ordinary (non-experiment-) words
-fig = plt.figure(figsize=(16, 8))
-non_experiment_words = [word for word in stats.index if word != word.upper()]
-sample = stats.loc[random.sample(non_experiment_words, 15000)]
-plt.scatter(sample.occurrences, sample.L2_norm_syn0, s=0.2)
-plt.xscale('log')
-plt.ylim(0, 50)
-plt.xlim(200, 10 ** 7)
-plt.title('Frequency vs vector length', y=1.04).set_fontsize(30)
-plt.xlabel('# occurrences').set_fontsize(30)
-plt.ylabel('L2 norm (syn0)').set_fontsize(30)
-plt.savefig('outputs/frequency-norm-scatterplot.eps')
-
-
-def set_num_plots(num_plots):
-    colormap = plt.cm.gist_ncar
-    plt.gca().set_color_cycle([colormap(i) for i in np.linspace(0, 0.9, num_plots)])
 
 words = word_freq_experiment_words + [meaningless_token]
 fig = plt.figure(figsize=(16, 6))
@@ -106,11 +94,9 @@ def plot_for_word(ax, word, series, **kwargs):
     return ax.plot(x, y, marker='o', **kwargs)[0]
 
 lines = []
-set_num_plots(len(words))
 for word in words:
     lines.append(plot_for_word(ax_syn0, word, stats.L2_norm_syn0))
 
-set_num_plots(len(words))
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
@@ -122,15 +108,7 @@ plt.tight_layout()
 plt.savefig('outputs/word-frequency-experiment-graph.eps')
 
 
-test_words = random.sample([word for word in word_freq_experiment_words if word != 'the'], 3)
-test_words += ['the', meaningless_token]
-idxs = [build_experiment_token(word, i) for word in test_words for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
-test_vecs = vectors_syn0.loc[idxs].dropna()
-cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
-plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
-
-
-## Co-occurrence noise experiment
+## CO-OCCURRENCE NOISE EXPERIMENT
 
 words = coocc_noise_experiment_words
 fig = plt.figure(figsize=(16, 6))
@@ -156,11 +134,9 @@ def plot_for_word(ax, word, series, **kwargs):
     return ax.plot(x, y, marker='o', **kwargs)[0]
 
 lines = []
-set_num_plots(len(words))
 for word in words:
     lines.append(plot_for_word(ax_syn0, word, stats.L2_norm_syn0))
 
-set_num_plots(len(words))
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 

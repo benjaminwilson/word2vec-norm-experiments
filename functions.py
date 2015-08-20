@@ -2,6 +2,7 @@ from __future__ import print_function
 import random
 import numpy as np
 import pandas as pd
+from scipy.spatial.distance import pdist, cdist
 import matplotlib.pyplot as plt
 from collections import defaultdict
 from parameters import random_seed, experiment_word_occurrence_min
@@ -146,9 +147,16 @@ def load_word2vec_binary(fname):
             vectors[line_no] = vector
     return pd.DataFrame(vectors, index=vocab)
 
+def cosine_similarity(vecs):
+    """
+    return the cosine similarity of each row with all the others.
+    'vecs' is a dataframe
+    """
+    vecs_normed = vecs.as_matrix() / np.sqrt((vecs ** 2).sum(axis=1))[:,np.newaxis]
+    return vecs_normed.dot(vecs_normed.transpose())    
+
 def cosine_similarity_heatmap(test_vecs, **kwargs):
-    test_vecs_normed = test_vecs.as_matrix() / np.sqrt((test_vecs ** 2).sum(axis=1))[:,np.newaxis]
-    mat = test_vecs_normed.dot(test_vecs_normed.transpose())    
+    mat = cosine_similarity(test_vecs)
     plt.figure(**kwargs)
     plt.title('Cosine similarity of word vectors')
     plt.pcolor(mat, vmin=-1, vmax=1)
@@ -156,3 +164,34 @@ def cosine_similarity_heatmap(test_vecs, **kwargs):
     _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index)
     _ = plt.xticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index, rotation=90)
 
+def by_distance_from(table, v, **params):
+    """
+    Return a Series, listing the distance of each row
+    from the vector given.
+    To specify different metrics, see docstring of scipy.spatial.distance.cdist
+    (default if Euclidean).
+    """
+    v = np.array(v).reshape(1, -1)
+    dist = pd.Series(
+        cdist(v, table, **params)[0], index=table.index, copy=True)
+    dist.sort()
+    return dist
+
+def row_normalise_matrix(matrix):
+    """
+    All matrices are represented by 2 dimension np.array instances (NOT np.matrix)
+    return the matrix, along with the norms.
+    """
+    matrix = matrix * 1.
+    norms = np.sqrt((matrix ** 2).sum(axis=1))
+    return matrix / norms[:, np.newaxis], norms
+
+def row_normalise_dataframe(df):
+    """
+    As per normalise_matrix, but accepts and returns a DataFrame and Series in
+    place of arrays.  The DataFrame and Series share the index of df.
+    """
+    normed_mat, norms = row_normalise_matrix(df.as_matrix())
+    normed_df = pd.DataFrame(normed_mat, index=df.index, columns=df.columns)
+    norms_series = pd.Series(norms, index=df.index)
+    return normed_df, norms_series
