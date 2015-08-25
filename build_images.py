@@ -8,6 +8,8 @@ import sys
 from parameters import *
 from functions import *
 
+random.seed(0) # fix seed so that we can refer to the randomly chosen words in the article body
+
 vectors_syn0_filename = sys.argv[1]
 vectors_syn1neg_filename = sys.argv[2]
 word_counts_filename = sys.argv[3]
@@ -15,6 +17,7 @@ word_freq_exp_words_filename = sys.argv[4]
 coocc_noise_exp_words_filename = sys.argv[5]
 
 matplotlib.rcParams.update({'font.size': 14})
+matplotlib.rcParams.update({'figure.autholayout': True})
 
 word_freq_experiment_words = read_words(word_freq_exp_words_filename)
 coocc_noise_experiment_words = read_words(coocc_noise_exp_words_filename)
