@@ -79,6 +79,7 @@ Our experimental finding (in the context of word2vec), that word vector length d
 In \cite{schakel-wilson}, the interpretation of word vector length as an indication of word significance is explored in the context of the arXiv high-energy physics corpus.
 
 \textcolor{red}{what about some work introducing tokens into a corpus for experiments?}
+
 \textcolor{red}{cite ``contextual distinctiveness: a new lexical property ...'' by McDonald and Shillcock?}
 
 In the word2vec similarity and word relationship tasks, normalised word vectors are used.
@@ -115,9 +116,10 @@ The source code for performing the experiments is made available on GitHub\footn
 
 Word vectors are then derived from the first layer of synaptic weights (``syn0'') and the second layer of weights (``syn1neg'') are discarded.
 
-\begin{table}\label{word-occurrences-table}
+\begin{table}
 	\input{words-occurrences.tex}
 	\caption{ Number of words, by frequency band, as observed in the unmodified corpus.  }
+	\label{word-occurrences-table}
 \end{table}
 
 \begin{subsection}{Replacement procedure}\label{replacement-procedure}
@@ -151,17 +153,19 @@ A maximum value $n=20$ suffices for this choice of $\lambda$, since $2^{20 + \lo
 Figure \ref{fig:word-frequency-experiment-text-cat} illustrates the effect of these modifications on a sample text, with a family of tokens \word{CAT\_i}, derived from the word \word{cat}.
 Notice that the word \word{cat} has been replaced throughout with the tokens \word{CAT\_i}.
 
-\begin{table}\label{word-frequency-counts}
+\begin{table}
 	\input{word-frequency-experiment-counts.tex}
 	\caption{Occurrence counts for words chosen for the word frequency experiment. }
+	\label{word-frequency-counts}
 \end{table}
 
-\begin{figure}\label{fig:word-frequency-experiment-text-cat}
+\begin{figure}
 	\begin{mdframed}
 	\input{word-frequency-experiment-text-cat.tex}
 	\end{mdframed}
 	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEexisting}, where the
 	word \word{cat} was chosen, $\lambda=0.5$ and $n=20$.}
+	\label{fig:word-frequency-experiment-text-cat}
 \end{figure}
 
 \end{subsection}
@@ -174,11 +178,12 @@ Notice that the word \word{cat} has been replaced throughout with the tokens \wo
 	The replacement procedure is then performed for \word{VOID}, using the same values for $\lambda$ and $n$ as above.
 	figure \ref{fig:word-frequency-experiment-text-void} shows the effect of this modifications on a sample text ($f = 0.05$ is used there for illustrative purposes).
 
-\begin{figure}\label{fig:word-frequency-experiment-text-void}
+\begin{figure}
 	\begin{mdframed}
 	\input{word-frequency-experiment-text-void.tex}
 	\end{mdframed}
 	\caption{A text modified for the word frequency experiment as per subsection \ref{WFVEmeaningless}, where $\lambda=0.5$ and $n=20$. For illustrative purposes, the token \word{VOID} was here interspersed with a global frequency of $0.05$.}
+	\label{fig:word-frequency-experiment-text-void}
 \end{figure}
 \end{subsection}
 
@@ -226,16 +231,17 @@ As an aside, notice also that the word vector length for the tokens \word{VOID\_
 Since the direction is also constant (cf. subsection \ref{WFVE-direction}), it is therefore sensible to speak of the word vector of \word{VOID} irrespective of its frequency.
 In particular, \word{VOID\_1} may be taken as an approximation.
 
-\begin{figure}\label{word-frequency-experiment-heatmap}
+\begin{figure}
 	\includegraphics[scale=0.5]{word-frequency-experiment-heatmap}
 	\caption{
 	Heatmap of the cosine similarity of the vectors associated to the
 	tokens introduced into the corpus in the co-occurrence noise experiment
 	(words other than \word{the} and \word{VOID} chosen randomly).
 	}
+	\label{word-frequency-experiment-heatmap}
 \end{figure}
 
-\begin{table}\label{word-frequency-experiment-cosine-similarity}
+\begin{table}
 	\input{cosine-similarity.tex}
 	\caption{
 	The most similar words in the original vocabulary to the tokens
@@ -245,9 +251,10 @@ In particular, \word{VOID\_1} may be taken as an approximation.
 	the word vectors of the low frequency tokens have not been
 	adequately trained (there were inadequate samples).
 	}
+	\label{word-frequency-experiment-cosine-similarity}
 \end{table}
 
-\begin{sidewaysfigure*}\label{fig:word-frequency-experiment-graph}
+\begin{sidewaysfigure*}
 	\centering{\includegraphics[scale=0.6]{word-frequency-experiment-graph}}
 	\caption{
 	Vector length vs frequency for the words chosen for the word frequency
@@ -257,6 +264,7 @@ In particular, \word{VOID\_1} may be taken as an approximation.
 	The word vectors are obtained from the first synaptic layer, ``syn0''.
 	The second layer ``syn1neg'' is included for completeness.
 	}
+	\label{fig:word-frequency-experiment-graph}
 \end{sidewaysfigure*}
 
 \end{section}
@@ -282,10 +290,11 @@ The particular value of $\lambda$ (large compared to that of section \ref{WFVE})
 These proportions are the sampling points on our axis of variation, and this value of $\lambda$ (together with the choice of $n$) ensures a reasonable spread.
 Note that other parameter values (or indeed other distributions) could equally have been used.
 
-\begin{table}\label{cooccurrence-noise-words}
+\begin{table}
 	\input{noise-cooccurrence-experiment-counts.tex}
 	\label{fig:co-occurrence-noise-counts}
 	\caption{Occurrence counts for words chosen for the co-occurrence noise experiment. }
+	\label{cooccurrence-noise-words}
 \end{table}
 
 \begin{figure}
@@ -293,7 +302,7 @@ Note that other parameter values (or indeed other distributions) could equally h
 	\input{cooccurrence-noise-experiment.tex}
 	\end{mdframed}
 	\caption{A text modified for the co-occurrence noise experiment, where the word \word{cat} was chosen, $\lambda = 5/6$ and $n=3$.}
-\label{fig:co-occurrence-noise-experiment-text}
+	\label{fig:co-occurrence-noise-experiment-text}
 \end{figure}
 
 \begin{subsection}{Results}
@@ -309,7 +318,7 @@ On the other hand, figure \ref{fig:co-occurrence-noise-graph} shows that word ve
 This figure motivates an interpretation of vector length, within a sufficiently narrow frequency band, as a measure of the absence of co-occurrence noise, that is, of the extent to which a word determines a context.
 
 
-\begin{figure}\label{fig:co-occurrence-noise-heatmap}
+\begin{figure}
 	\includegraphics[scale=0.5]{cooccurrence-noise-heatmap}
 	\caption{
 	Heatmap of the cosine similarity of some of the vectors associated to the
@@ -318,9 +327,10 @@ This figure motivates an interpretation of vector length, within a sufficiently 
 	largely red blocks demonstrate that the direction of the word vector
 	does not change when noise is added to the co-occurrence distribution.
 	}
+	\label{fig:co-occurrence-noise-heatmap}
 \end{figure}
 
-\begin{sidewaysfigure*}\label{fig:co-occurrence-noise-graph}
+\begin{sidewaysfigure*}
 	\includegraphics[scale=0.6]{cooccurrence-noise-graph}
 	\caption{
 	Vector length vs proportion of co-occurrence noise for words
@@ -331,6 +341,7 @@ This figure motivates an interpretation of vector length, within a sufficiently 
 	The word vectors are obtained from the first synaptic layer, ``syn0''.
 	The second layer ``syn1neg'' is included for completeness.
 	}
+	\label{fig:co-occurrence-noise-graph}
 \end{sidewaysfigure*}
 
 \end{subsection}

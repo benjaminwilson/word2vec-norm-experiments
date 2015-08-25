@@ -158,6 +158,6 @@ for word in random.sample(coocc_noise_experiment_words, 4):
 
 # to check for colinearity, we need to subtract the vector that they all converge to, viz. the meaningless vector.
 meaningless_vec = vectors_syn0.loc[build_experiment_token(meaningless_token, 1)]
-test_vecs = vectors_syn0.loc[idxs].dropna() - meaningless_vec
+test_vecs = vectors_syn0.loc[idxs].dropna()
 cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
 plt.savefig('outputs/cooccurrence-noise-heatmap.eps')
