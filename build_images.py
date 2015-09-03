@@ -75,8 +75,7 @@ for word in word_freq_experiment_words + [meaningless_token]:
 
 words = word_freq_experiment_words + [meaningless_token]
 fig = plt.figure(figsize=(16, 6))
-colormap = plt.cm.gist_ncar
-colorcycle = [colormap(i) for i in np.linspace(0, 0.9, len(words))]
+colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, len(words)))
 
 ax_syn0 = plt.subplot(131)
 ax_syn0.set_xlabel('# occurrences')
@@ -85,7 +84,7 @@ ax_syn0.set_xscale('log')
 ax_syn0.set_color_cycle(colorcycle)
 ax_syn0.set_title('syn0', y=1.04)
 
-ax_syn1neg = plt.subplot(132, sharex=ax_syn0, sharey=ax_syn0)
+ax_syn1neg = plt.subplot(132, sharex=ax_syn0)
 ax_syn1neg.set_xlabel('# occurrences')
 ax_syn1neg.set_color_cycle(colorcycle)
 ax_syn1neg.set_title('syn1neg', y=1.04)
@@ -94,7 +93,8 @@ def plot_for_word(ax, word, series, **kwargs):
     idxs = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
     x = stats.loc[idxs].occurrences
     y = series.loc[idxs]
-    return ax.plot(x, y, marker='o', **kwargs)[0]
+    marker = ['o', 's', 'D'][ord(word[0]) % 3]
+    return ax.plot(x, y, marker=marker, **kwargs)[0]
 
 lines = []
 for word in words:
@@ -104,6 +104,7 @@ for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
 ax_syn0.set_ylim(0, 45)
+ax_syn1neg.set_ylim(0, 25)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
 plt.tight_layout()
@@ -115,8 +116,7 @@ plt.savefig('outputs/word-frequency-experiment-graph.eps')
 
 words = coocc_noise_experiment_words
 fig = plt.figure(figsize=(16, 6))
-colormap = plt.cm.gist_ncar
-colorcycle = [colormap(i) for i in np.linspace(0, 0.9, len(words))]
+colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, len(words)))
 
 ax_syn0 = plt.subplot(131)
 ax_syn0.set_xlabel('Proportion of noise occurrences')
@@ -134,7 +134,8 @@ def plot_for_word(ax, word, series, **kwargs):
     idxs = [build_experiment_token(word, i) for i in exponents]
     x = [1 - coocc_noise_experiment_ratio ** exponent for exponent in exponents]
     y = series.loc[idxs]
-    return ax.plot(x, y, marker='o', **kwargs)[0]
+    marker = ['o', 's', 'D'][ord(word[0]) % 3]
+    return ax.plot(x, y, marker=marker, **kwargs)[0]
 
 lines = []
 for word in words:
@@ -143,7 +144,7 @@ for word in words:
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-ax_syn0.set_ylim(0, 12)
+ax_syn0.set_ylim(0, 9)
 ax_syn0.set_xlim(0, 1)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
