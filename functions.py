@@ -76,14 +76,14 @@ def truncated_geometric_sampling(word, ratio, max_value):
 
 def intersperse_words(interspersal_rates, f_in, f_out):
     """
-    Insperse words uniformly at random throughout the text in 'in_filename',
-    writing the result to 'out_filename'.  'interspersal_rates' is a dict
+    Insperse words uniformly at random throughout the text in file-like object 'f_in',
+    writing the result to file-like object 'f_out'.  'interspersal_rates' is a dict
     mapping words to the rate at which they should be interspersed, e.g.
         interspersal_rates = {'CAT_3': 0.004, 'MEANINGLESS': 0.0001}
 
     Our use of this function in the experiments assumes that total number of
     words remains essentially unchanged.
-    """ #FIXME update doc
+    """
     insertion_proba = sum(interspersal_rates.values())
     insertion_words = interspersal_rates.keys()
     relative_probas = np.array([interspersal_rates[word] for word in insertion_words]) / insertion_proba
@@ -103,11 +103,11 @@ def intersperse_words(interspersal_rates, f_in, f_out):
 
 def replace_words(word_sampler_dict, f_in, f_out):
     """
-    Performs a replacement procedure on the text in 'in_filename', writing the
-    results to 'out_filename'.  'word_sampler_dict' is a dict mapping words to
+    Performs a replacement procedure on the text in read from file-like object 'f_in', writing the
+    results to the file-like object 'f_out'.  'word_sampler_dict' is a dict mapping words to
     be replaced to functions (without arguments) that return their replacement.
     e.g. word_sampler_dict = {'cat': truncated_geometric_proba('cat', 0.5, 20)} 
-    """ #FIXME update doc
+    """
     for line in f_in:
         words_out = []
         for word in line.strip().split(' '):
