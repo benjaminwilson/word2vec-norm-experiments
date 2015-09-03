@@ -2,7 +2,7 @@ import sys
 
 print r"""\begin{center}
 \begin{tabular}{l | r}
-word & \# occurrences \\
+word & tf \\
 \hline"""
 wcs = []
 for line in sys.stdin:
