@@ -1,5 +1,23 @@
 \begin{thebibliography}{1}
 
+\bibitem{Arora2015}
+Sanjeev Arora, Yuanzhi Li, Yingyu Liang, Tengyu Ma, and Andrej Risteski.
+\newblock Random walks on context spaces: Towards an explanation of the
+  mysteries of semantic word embeddings.
+\newblock {\em CoRR}, abs/1502.03520, 2015.
+
+\bibitem{collobert-2011}
+Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray
+  Kavukcuoglu, and Pavel Kuksa.
+\newblock Natural language processing (almost) from scratch.
+\newblock {\em J. Mach. Learn. Res.}, 12:2493--2537, November 2011.
+
+\bibitem{mcdonald2001contextual}
+Scott McDonald and Richard Shillcock.
+\newblock Contextual distinctiveness: a new lexical property computed from
+  large corpora.
+\newblock {\em Behavior Research Methods, Instruments and Computers}, 2001.
+
 \bibitem{EfficientEstimation}
 Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean.
 \newblock Efficient estimation of word representations in vector space.
@@ -11,10 +29,23 @@ Tomas Mikolov, Ilya Sutskever, Kai Chen, Greg Corrado, and Jeffrey Dean.
   compositionality.
 \newblock {\em CoRR}, abs/1310.4546, 2013.
 
-\bibitem{Arora2015}
-Sanjeev Arora, Yuanzhi Li, Yingyu Liang, Tengyu Ma, and Andrej Risteski.
-\newblock Random walks on context spaces: Towards an explanation of the
-  mysteries of semantic word embeddings.
-\newblock {\em CoRR}, abs/1502.03520, 2015.
+\bibitem{pennington2014glove}
+Jeffrey Pennington, Richard Socher, and Christopher~D Manning.
+\newblock Glove: Global vectors for word representation.
+\newblock {\em Proceedings of the Empiricial Methods in Natural Language
+  Processing (EMNLP 2014)}, 12:1532--1543, 2014.
+
+\bibitem{schakel-wilson}
+Adriaan M.~J. Schakel and Benjamin~J. Wilson.
+\newblock Measuring word significance using distributed representations of
+  words, 2015.
+
+\bibitem{vecchi-baroni-zamparelli2011}
+Eva~M. Vecchi, Marco Baroni, and Roberto Zamparelli.
+\newblock {(Linear) Maps of the Impossible: Capturing Semantic Anomalies in
+  Distributional Space}.
+\newblock In {\em Proceedings of the Workshop on Distributional Semantics and
+  Compositionality}, pages 1--9, Portland, Oregon, USA, June 2011. Association
+  for Computational Linguistics.
 
 \end{thebibliography}

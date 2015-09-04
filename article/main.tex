@@ -53,10 +53,7 @@
 \end{abstract} 
 
 \begin{section}{Introduction}
-The field of natural language processing (NLP) is presently undergoing rapid
-developments, not in the least triggered by the tremendous commercial
-promises it holds.  A timely research topic in NLP are word embeddings,
-where words from a vocabulary are represented by dense, real-valued
+Word embeddings represent words from the vocabulary as dense, real-valued
 vectors.  Instead of one-hot vectors that merely indicate the location
 of a word in the vocabulary, dense
 vectors of dimension much smaller than the vocabulary size are
@@ -139,21 +136,14 @@ and possible future directions.
 Our notion of word significance is reminiscent of the concept of
 ``contextual distinctiveness'' introduced earlier by McDonald and
 Shillcock \cite{mcdonald2001contextual}, who also based their work on word co-occurrences.
-They define contextual distinctiveness of a target word $w$ as the
-Kullback-Leibler divergence $\mathrm{D} \big(\p(w') ||\p(w'|w) \big)$
-between the distribution of context words, $\p(w')$, and the
-co-occurrence distributions of that target word $w$.  Specifically,
-\begin{equation} 
-\label{cd}
-\mathrm{D} \big(\p(w') ||\p(w'|w) \big) = \sum_{w'} \p(w'|w) \log_2
-\frac{\p(w'|w)}{\p(w')},
-\end{equation} 
-where the sum is over the set of \textcolor{blue}{content?} words $w'$.
-As pointed out by the
-authors, contextual distinctiveness is a measure of the amount of
+They define the contextual distinctiveness of a target word $w$ as the
+Kullback-Leibler divergence
+between the global word distribution $\p(w')$, and the
+co-occurrence distribution $\p(w' | w)$ of the target word $w$.
+So defined, contextual distinctiveness is a measure of the amount of
 information provided by word $w$ about its contexts of use.  More specifically, if a
 word $w$ tends to appear in a wide variety of contexts, the distribution
-of the words it occurs with, i.e. the posterior distribution $\p(w'|w)$,
+of the words it occurs with, i.e. the posterior distribution $\p(w' | w)$,
 tends to diverge less from the prior distribution $\p(w')$, and its
 contextual distinctiveness is accordingly small.  If, on the other hand,
 $w$ typically appears in only a small number of different contexts, the
@@ -332,12 +322,12 @@ meaningless word.  We choose to introduce an artificial, entirely
 meaningless word \word{VOID} into the corpus, rather than choose an
 existing (stop)word whose meaninglessness is only supposed.  To achieve
 this, we intersperse the word uniformly at random throughout the corpus so
-that its global frequency is $0.005$.  The co-occurrence
+that its global occurrence rate is $0.005$.  The co-occurrence
 distribution of \word{VOID} thus coincides with the global word
 distribution.  The replacement procedure is then performed for this
 word, using the same values for $p$ and $n$ as above.
 Figure \ref{fig:word-frequency-experiment-text-void} shows the effect of
-these modifications on a sample text, where a higher global frequency of $0.05$ is used instead
+these modifications on a sample text, where a higher word occurrence rate of $0.05$ is used instead
 for illustrative purposes.  Although the probability of inserting token
 \word{VOID\_1} is twice that of inserting token \word{VOID\_2} and four
 times that of inserting token \word{VOID\_3}, these three tokens all
@@ -352,7 +342,7 @@ appear once in this small piece of text.
           instead of the word \word{cat} now the meaningless word
           \word{VOID} is replaced with tokens \word{VOID\_i}.  For
           illustrative purposes, the meaningless word \word{VOID} was
-          here interspersed with a global frequency of $0.05$.}
+          here interspersed with a occurrence rate of $0.05$.}
 	\label{fig:word-frequency-experiment-text-void}
 \end{figure}
 \end{subsection}
@@ -576,10 +566,10 @@ which a word carries the meaning of a distinctive context.
 %When read from right to left, this figure can be reinterpreted and
 %related to the corresponding figure in
 %Figure \ref{fig:word-frequency-experiment-graph} as follows.
-If the average effect of co-occurrence noise were neglible, then the horizontal axis could be reinterpreted as
-denoting term frequency and (reading the graph from right to left).
+If the average effect of co-occurrence noise were neglible, then the horizontal axis of Figure \ref{fig:co-occurrence-noise-graph} could be reinterpreted as
+denoting word frequency by reading the graph from right to left.
 Thus a similar picture to Figure \ref{fig:word-frequency-experiment-graph} would emerge, namely that the
-word vector length increases more or less linearly with term frequency.
+word vector length increases more or less linearly with word frequency.
 This can not, however, be the complete picture, for the vectors
 represented by the second synaptic layer, syn1neg, show a different
 behavior in the two figures.  In particular, the length of these vectors
