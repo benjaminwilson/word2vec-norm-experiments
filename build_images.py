@@ -55,10 +55,14 @@ def wf_experiment_tokens(word):
 test_words = random.sample([word for word in word_freq_experiment_words if word != 'the'], 4)
 test_words += ['the', meaningless_token]
 idxs = []
+ticks = []
 for word in test_words:
-    idxs += wf_experiment_tokens(word)
+    tokens = wf_experiment_tokens(word) 
+    idxs += tokens
+    ticks += tokens[:2] + ['.  '] * len(tokens[2:-1]) + tokens[-1:]
+
 test_vecs = vectors_syn0.loc[idxs]
-cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
+cosine_similarity_heatmap(test_vecs, ticks, figsize=(12, 10))
 plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
 
 # remove word vectors that are not well trained
@@ -74,34 +78,44 @@ for word in word_freq_experiment_words + [meaningless_token]:
 
 
 words = word_freq_experiment_words + [meaningless_token]
+
+# reorder by the left-most value of the corresponding syn0 plot
+def get_leftmost_value(word):
+    for i in range(1, word_freq_experiment_power_max + 1):
+        idx = build_experiment_token(word, i)
+        if idx in vectors_syn0.index:
+            last_idx = idx
+    return stats.L2_norm_syn0.loc[last_idx]
+words = sorted(words, key=get_leftmost_value, reverse=True)
+markers = [['o', 's', 'D'][i % 3] for i in range(len(words))]
+
 fig = plt.figure(figsize=(16, 6))
-colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, len(words)))
+colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
 
 ax_syn0 = plt.subplot(131)
-ax_syn0.set_xlabel('# occurrences')
+ax_syn0.set_xlabel('frequency')
 ax_syn0.set_ylabel('L2 norm')
 ax_syn0.set_xscale('log')
 ax_syn0.set_color_cycle(colorcycle)
 ax_syn0.set_title('syn0', y=1.04)
 
 ax_syn1neg = plt.subplot(132, sharex=ax_syn0)
-ax_syn1neg.set_xlabel('# occurrences')
+ax_syn1neg.set_xlabel('frequency')
 ax_syn1neg.set_color_cycle(colorcycle)
 ax_syn1neg.set_title('syn1neg', y=1.04)
     
-def plot_for_word(ax, word, series, **kwargs):
-    idxs = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]
-    x = stats.loc[idxs].occurrences
-    y = series.loc[idxs]
-    marker = ['o', 's', 'D'][ord(word[0]) % 3]
+def plot_for_word(ax, word, marker, series, **kwargs):
+    idxs = [build_experiment_token(word, i) for i in range(1, word_freq_experiment_power_max + 1)]
+    x = stats.loc[idxs].occurrences.dropna()
+    y = series.loc[idxs].dropna()
     return ax.plot(x, y, marker=marker, **kwargs)[0]
 
 lines = []
-for word in words:
-    lines.append(plot_for_word(ax_syn0, word, stats.L2_norm_syn0))
+for word, marker in zip(words, markers):
+    lines.append(plot_for_word(ax_syn0, word, marker, stats.L2_norm_syn0))
 
-for word in words:
-    plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
+for word, marker in zip(words, markers):
+    plot_for_word(ax_syn1neg, word, marker, stats.L2_norm_syn1neg)
 
 ax_syn0.set_ylim(0, 45)
 ax_syn1neg.set_ylim(0, 25)
@@ -115,8 +129,13 @@ plt.savefig('outputs/word-frequency-experiment-graph.eps')
 ## CO-OCCURRENCE NOISE EXPERIMENT
 
 words = coocc_noise_experiment_words
+
+# reorder by the left-most value of the corresponding syn0 plot
+words = sorted(words, key=lambda word: stats.L2_norm_syn0.loc[build_experiment_token(word, 1)], reverse=True)
+
+markers = [['o', 's', 'D'][i % 3] for i in range(len(words))]
 fig = plt.figure(figsize=(16, 6))
-colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, len(words)))
+colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
 
 ax_syn0 = plt.subplot(131)
 ax_syn0.set_xlabel('Proportion of noise occurrences')
@@ -144,7 +163,7 @@ for word in words:
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-ax_syn0.set_ylim(0, 9)
+ax_syn0.set_ylim(2.5, 8.5)
 ax_syn0.set_xlim(0, 1)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
@@ -154,11 +173,13 @@ plt.savefig('outputs/cooccurrence-noise-graph.eps')
 
 
 idxs = []
+ticks = []
 for word in random.sample(coocc_noise_experiment_words, 4):
-    idxs += [build_experiment_token(word, i) for i in range(1, coocc_noise_experiment_power_max + 1)]
+    candidates = [build_experiment_token(word, i) for i in range(1, coocc_noise_experiment_power_max + 1)]
+    tokens = [token for token in candidates if token in vectors_syn0.index]
+    idxs += tokens
+    ticks += tokens[:2] + ['.  '] * len(tokens[2:-1]) + tokens[-1:]
 
-# to check for colinearity, we need to subtract the vector that they all converge to, viz. the meaningless vector.
-meaningless_vec = vectors_syn0.loc[build_experiment_token(meaningless_token, 1)]
-test_vecs = vectors_syn0.loc[idxs].dropna()
-cosine_similarity_heatmap(test_vecs, figsize=(12, 10))
+test_vecs = vectors_syn0.loc[idxs]
+cosine_similarity_heatmap(test_vecs, ticks, figsize=(12, 10))
 plt.savefig('outputs/cooccurrence-noise-heatmap.eps')

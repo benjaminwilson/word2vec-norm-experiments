@@ -155,7 +155,7 @@ def cosine_similarity(vecs):
     vecs_normed = vecs.as_matrix() / np.sqrt((vecs ** 2).sum(axis=1))[:,np.newaxis]
     return vecs_normed.dot(vecs_normed.transpose())    
 
-def cosine_similarity_heatmap(test_vecs, **kwargs):
+def cosine_similarity_heatmap(test_vecs, ticks, **kwargs):
     mat = cosine_similarity(test_vecs)
     plt.figure(**kwargs)
     plt.title('Cosine similarity of word vectors')
@@ -163,8 +163,8 @@ def cosine_similarity_heatmap(test_vecs, **kwargs):
     _ = plt.gca().set_xlim(0, len(test_vecs.index))
     plt.pcolor(mat, vmin=-1, vmax=1)
     plt.colorbar()
-    _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index)
-    _ = plt.xticks(np.arange(0.5, len(test_vecs.index), 1), test_vecs.index, rotation=90)
+    _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), ticks, fontsize=11)
+    _ = plt.xticks(np.arange(0.5, len(test_vecs.index), 1), ticks, rotation=90, fontsize=11)
     plt.tight_layout()
 
 def by_distance_from(table, v, **params):

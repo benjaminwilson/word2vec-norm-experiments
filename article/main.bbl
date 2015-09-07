@@ -12,6 +12,12 @@ Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray
 \newblock Natural language processing (almost) from scratch.
 \newblock {\em J. Mach. Learn. Res.}, 12:2493--2537, November 2011.
 
+\bibitem{landauer-dumais1997}
+Thomas~K Landauer and Susan~T. Dutnais.
+\newblock A solution to plato’s problem: The latent semantic analysis theory
+  of acquisition, induction, and representation of knowledge.
+\newblock {\em PSYCHOLOGICAL REVIEW}, 104(2):211--240, 1997.
+
 \bibitem{mcdonald2001contextual}
 Scott McDonald and Richard Shillcock.
 \newblock Contextual distinctiveness: a new lexical property computed from
