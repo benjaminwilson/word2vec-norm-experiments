@@ -37,8 +37,8 @@ total_words = sum(new_counts.values())
 stats = pd.DataFrame({'occurrences': new_counts, 'L2_norm_syn0': norms_syn0, 'L2_norm_syn1neg': norms_syn1neg}).dropna()
 stats['occurrences_band'] = np.floor(np.log2(stats.occurrences)).astype(int)
 stats['log2_frequency'] = np.log2(stats.occurrences * 1. / total_words)
-stats.L2_norm_syn0.name = 'L2 norm (syn0)'
-stats.L2_norm_syn1neg.name = 'L2 norm (syn1neg)'
+stats.L2_norm_syn0.name = 'vector length (syn0)'
+stats.L2_norm_syn1neg.name = 'vector length (syn1neg)'
 
 
 # WORD FREQUENCY EXPERIMENT
@@ -94,7 +94,7 @@ colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
 
 ax_syn0 = plt.subplot(131)
 ax_syn0.set_xlabel('frequency')
-ax_syn0.set_ylabel('L2 norm')
+ax_syn0.set_ylabel('vector length')
 ax_syn0.set_xscale('log')
 ax_syn0.set_color_cycle(colorcycle)
 ax_syn0.set_title('syn0', y=1.04)
@@ -138,13 +138,13 @@ fig = plt.figure(figsize=(16, 6))
 colorcycle = plt.cm.gist_rainbow(np.linspace(0, 1, 5))
 
 ax_syn0 = plt.subplot(131)
-ax_syn0.set_xlabel('Proportion of noise occurrences')
-ax_syn0.set_ylabel('L2 norm')
+ax_syn0.set_xlabel('Proportion of occurrences from noise distribution')
+ax_syn0.set_ylabel('vector length')
 ax_syn0.set_color_cycle(colorcycle)
 ax_syn0.set_title('syn0', y=1.04)
 
 ax_syn1neg = plt.subplot(132, sharex=ax_syn0, sharey=ax_syn0)
-ax_syn1neg.set_xlabel('Proportion of noise occurrences')
+ax_syn1neg.set_xlabel('Proportion of occurrences from noise distribution')
 ax_syn1neg.set_color_cycle(colorcycle)
 ax_syn1neg.set_title('syn1neg', y=1.04)
     

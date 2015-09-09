@@ -1,10 +1,18 @@
-\begin{thebibliography}{1}
+\begin{thebibliography}{10}
 
 \bibitem{Arora2015}
 Sanjeev Arora, Yuanzhi Li, Yingyu Liang, Tengyu Ma, and Andrej Risteski.
 \newblock Random walks on context spaces: Towards an explanation of the
   mysteries of semantic word embeddings.
 \newblock {\em CoRR}, abs/1502.03520, 2015.
+
+\bibitem{dontcountpredict}
+Marco Baroni, Georgiana Dinu, and Germ\'{a}n Kruszewski.
+\newblock Don't count, predict! a systematic comparison of context-counting vs.
+  context-predicting semantic vectors.
+\newblock In {\em Proceedings of the 52nd Annual Meeting of the Association for
+  Computational Linguistics (Volume 1: Long Papers)}, pages 238--247,
+  Baltimore, Maryland, June 2014. Association for Computational Linguistics.
 
 \bibitem{collobert-2011}
 Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray

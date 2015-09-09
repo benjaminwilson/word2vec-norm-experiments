@@ -25,7 +25,7 @@
 	Lateral GmbH\\
 	\texttt{benjamin@lateral.io}
 	\And
-	Adriaan Schakel\\
+	Adriaan M.\,J.\, Schakel\\
 	NNLP\\
 	\texttt{adriaan.schakel@gmail.com}
  }
@@ -53,28 +53,27 @@
 \end{abstract} 
 
 \begin{section}{Introduction}
-Word embeddings, or distributed representations of words, have been the subject
-of much recent research in the natural language processing and machine learning
-communities, demonstrating state-of-the-art performance on word similarity and
-word analogy tasks, amongst others.
-Word embeddings represent words from the vocabulary as dense, real-valued
+Word embeddings, or distributed representations of words, have been the
+subject of much recent research in the natural language processing and
+machine learning communities, demonstrating state-of-the-art performance
+on word similarity and word analogy tasks, amongst others.  Word
+embeddings represent words from the vocabulary as dense, real-valued
 vectors.  Instead of one-hot vectors that merely indicate the location
-of a word in the vocabulary, dense
-vectors of dimension much smaller than the vocabulary size are
-constructed such that they carry syntactic and semantic information.
-Irrespective of the technique chosen, word embeddings are
-typically derived from word co-occurrences.  More specifically, in a
-machine-learning setting, word embeddings are typically trained by
-scanning a short window over all the text in a corpus.  This process can
-be seen as sampling word co-occurrence distributions, where it is
-recalled that the co-occurrence distribution of a target word $w$
-denotes the conditional probability $\p(w'|w)$ that a word $w'$ occurs in
-its context, i.e. given that $w$ occurred.  Most applications of word
-embeddings explore not the word vectors themselves, but relations
-between them to solve, for example, similarity and word relation tasks
-\cite{vecchi-baroni-zamparelli2011}.  For these tasks, it was found that using normalised word
-vectors improves performance.  Word vector length is therefore typically
-ignored.
+of a word in the vocabulary, dense vectors of dimension much smaller
+than the vocabulary size are constructed such that they carry syntactic
+and semantic information.  Irrespective of the technique chosen, word
+embeddings are typically derived from word co-occurrences.  More
+specifically, in a machine-learning setting, word embeddings are
+typically trained by scanning a short window over all the text in a
+corpus.  This process can be seen as sampling word co-occurrence
+distributions, where it is recalled that the co-occurrence distribution
+of a target word $w$ denotes the conditional probability $\p(w'|w)$ that
+a word $w'$ occurs in its context, i.e., given that $w$ occurred.  Most
+applications of word embeddings explore not the word vectors themselves,
+but relations between them to solve, for example, similarity and word
+relation tasks \cite{dontcountpredict}.  For these tasks, it
+was found that using normalised word vectors improves performance.  Word
+vector length is therefore typically ignored.
 
 In a previous paper \cite{schakel-wilson}, we proposed the use of word
 vector length as measure of word significance.  Using a domain-specific
@@ -124,51 +123,71 @@ distribution of the word is increased.  We show furthermore that the
 direction of the word vectors is independent of both word frequency and
 co-occurrence noise.
 
-This paper is structured as follows.  Section \ref{related-work} draws
-connections to related work, while Section \ref{corpus-and-model} describes
+This paper is structured as follows.  Section~\ref{related-work} draws
+connections to related work, while Section~\ref{corpus-and-model} describes
 the corpus and the CBOW model used in our experiments.
-Section \ref{WFVE} describes a controlled experiment for varying word
+Section~\ref{WFVE} describes a controlled experiment for varying word
 frequency while holding the co-occurrence distribution fixed.
-Section \ref{CNVE}, in a complementary fashion, describes a controlled
+Section~\ref{CNVE}, in a complementary fashion, describes a controlled
 experiment for varying the level of noise in the co-occurrence
 distribution of a word while holding the word frequency fixed.  The
-final section, Section \ref{future-directions}, considers further questions
+final section, Section~\ref{future-directions}, considers further questions
 and possible future directions.
 \end{section}
 
 \begin{section}{Related work}\label{related-work}
 Our notion of word significance is reminiscent of the concept of
 ``contextual distinctiveness'' introduced earlier by McDonald and
-Shillcock \cite{mcdonald2001contextual}.
-They define the contextual distinctiveness of a target word $w$ as the
-Kullback-Leibler divergence
+Shillcock \cite{mcdonald2001contextual}.  They define the contextual
+distinctiveness of a target word $w$ as the Kullback-Leibler divergence
 between the unconditional word distribution $\p(w')$, and the
-co-occurrence distribution $\p(w' | w)$ of the target word $w$.
-So defined, contextual distinctiveness is a measure of the amount of
-information provided by word $w$ about its contexts of use.  More specifically, if a word $w$ tends to appear in a wide variety of contexts, then its co-occurrence distribution tends to diverge less from unconditional word distribution, and its
-contextual distinctiveness is accordingly small.  If, on the other hand,
-$w$ typically appears in only a small number of different contexts, its co-occurrence distribution tends to diverge more from the unconditional word distribution, and a larger value of contextual distinctiveness results.
-In order to reduce the computational burden, the authors considered only $690$ target words, randomly chosen from equally divided frequency bands.
-Furthermore, the authors considered only co-occurrence with the $500$ most frequent content words.
-This significant restriction, necessary in their case in order to reduce the variance of the estimates of their measure of contextual distinctiveness, does not apply in our study.
+co-occurrence distribution $\p(w' | w)$ of the target word $w$.  So
+defined, contextual distinctiveness is a measure of the amount of
+information provided by word $w$ about its contexts of use.  More
+specifically, if a word $w$ tends to appear in a wide variety of
+contexts, then its co-occurrence distribution tends to diverge less from
+unconditional word distribution, and its contextual distinctiveness is
+accordingly small.  If, on the other hand, $w$ typically appears in only
+a small number of different contexts, its co-occurrence distribution
+tends to diverge more from the unconditional word distribution, and a
+larger value of contextual distinctiveness results.  To reduce the
+computational burden, the authors considered only $690$ target words,
+randomly chosen from equally divided frequency bands.  Furthermore, the
+authors considered only co-occurrence with the $500$ most frequent
+content words.  This significant restriction, necessary in their case in
+order to reduce the variance of the estimates of their measure of
+contextual distinctiveness, does not apply in our study.
 
 Our experimental finding that word vector length decreases with
 co-occurrence noise is related to earlier work by Vecchi, Baroni, and
 Zamparelli \cite{vecchi-baroni-zamparelli2011}, where a relation between
 vector length and the ``semantic deviance'' of an adjective-noun
-composite was studied empirically.  
-In that paper, which is also based
-on word co-occurrence, the authors study adjective-noun composites.
-They built a vocabulary from the 8k most frequent nouns and 4k most frequent adjectives in a large general language corpus and added 22k adjective-noun composites.
-For each item in the vocabulary, they recorded the co-occurrences with the top 10k most frequent content words (nouns, adjectives or verbs), and contructed word embeddings via singular value decomposition of the co-occurrence matrix \cite{landauer-dumais1997}.
-The authors considered several models for constructing vectors of unattested adjective-noun composites, the two simplest being adding and component-wise multiplying the adjective and noun vectors.
-They hypothesized that the length of the vectors thus constructed can be used to distinguish acceptable and semantically deviant adjective-noun composites.
-Using a few hundred adjective-noun composites selected by humans for evaluation, they found that deviant composites have a shorter vector than acceptable ones, in accordance with their expectation.
-In contrast to their work, our approach does not require extensive human evaluation.
+composite was studied empirically.  In that paper, which is also based
+on word co-occurrence statistics, the authors study adjective-noun
+composites.  They built a vocabulary from the 8k most frequent nouns and
+4k most frequent adjectives in a large general language corpus and added
+22k adjective-noun composites.  For each item in the vocabulary, they
+recorded the co-occurrences with the top 10k most frequent content words
+(nouns, adjectives or verbs), and constructed word embeddings via
+singular value decomposition of the co-occurrence matrix
+\cite{landauer-dumais1997}.  The authors considered several models for
+constructing vectors of unattested adjective-noun composites, the two
+simplest being adding and component-wise multiplying the adjective and
+noun vectors.  They hypothesized that the length of the vectors thus
+constructed can be used to distinguish acceptable and semantically
+deviant adjective-noun composites.  Using a few hundred adjective-noun
+composites selected by humans for evaluation, they found that deviant
+composites have a shorter vector than acceptable ones, in accordance
+with their expectation.  In contrast to their work, our approach does
+not require extensive human evaluation.
 
-Recent theoretical work \cite{Arora2015} has approached the problem of explaining the so-called ``compositionality'' property exhibited by some word embeddings.
-In that work, unnormalised vectors are used in their model of the word relationship task.
-It is hoped that experimental approaches such as those described here might enable theoretical investigations to describe the role of the word vector length in the word relationship tasks.
+Recent theoretical work \cite{Arora2015} has approached the problem of
+explaining the so-called ``compositionality'' property exhibited by some
+word embeddings.  In that work, unnormalised vectors are used in their
+model of the word relation task.  It is hoped that experimental
+approaches such as those described here might enable theoretical
+investigations to describe the role of the word vector length in the
+word relation tasks.
 \end{section}
 
 \begin{section}{Corpus and model}\label{corpus-and-model}
@@ -179,24 +198,24 @@ retained.\footnote{For further justification and to obtain the dataset,
   see\\ \blogpost} Stubs and disambiguation pages are also removed,
 leaving 463 thousand pages with a total of 482 million words.
 Punctuation marks and numbers were removed from the pages and all words
-were lower-cased.  Word frequencies are summarised 
-in Table \ref{word-occurrences-table}.  This base corpus is then
-modified as described in Sections \ref{WFVE} and \ref{CNVE}.  For
+were lower-cased.  Word frequencies are summarised in
+Table~\ref{word-occurrences-table}.  This base corpus is then modified
+as described in Sections~\ref{WFVE} and \ref{CNVE}.  For
 recognisability, the tokens inserted into the corpus are upper-cased.
 
 \begin{subsection}{Word2vec}\label{word2vec}
-Word2vec, a feed-forward neural network with a single hidden
-layer, learns word vectors from word co-occurrences in an unsupervised
-manner.  Word2vec comes in two versions.  In the continuous bag-of-words
-(CBOW) model, the words appearing around a target word serve as input.
-That input is projected linearly onto the hidden layer and the networks
-then attempts to predict the target word on output.  Training is
-achieved through back-propagation.  The word vectors are encoded in the
-weights of the first synaptic layer, ``syn0''.  The weights of the
-second synaptic layer (``syn1neg'', in the case of negative sampling) are typically discarded.  In the other model,
-called skip-gram, target and context words swap places, so that the
-target word now serves as input, while the network attempts to predict
-the context words on output.
+Word2vec, a feed-forward neural network with a single hidden layer,
+learns word vectors from word co-occurrences in an unsupervised manner.
+Word2vec comes in two versions.  In the continuous bag-of-words (CBOW)
+model, the words appearing around a target word serve as input.  That
+input is projected linearly onto the hidden layer and the network then
+attempts to predict the target word on output.  Training is achieved
+through back-propagation.  The word vectors are encoded in the weights
+of the first synaptic layer, ``syn0''.  The weights of the second
+synaptic layer (``syn1neg'', in the case of negative sampling) are
+typically discarded.  In the other model, called skip-gram, target and
+context words swap places, so that the target word now serves as input,
+while the network attempts to predict the context words on output.
 
 For simplicity only the word2vec CBOW word embedding with a single set
 of hyperparameters is considered.  Specifically, a CBOW model with a
@@ -236,10 +255,10 @@ with varying frequencies but approximately the same co-occurrence
 distribution as \word{cat}.  That is, all these tokens are used in
 roughly the same contexts as the original word.
 
-The geometric distribution is truncated in order to limit the number of
-tokens inserted into the corpus.  For any choice $0 < p < 1$ and
-maximum value $n > 0$, the truncated geometric distribution is given by
-the probability density function
+The geometric distribution is truncated to limit the number of tokens
+inserted into the corpus.  For any choice $0 < p < 1$ and maximum value
+$n > 0$, the truncated geometric distribution is given by the
+probability density function
 \begin{equation} 
 \label{distro}
 P_{p, n} (i) = \frac{p^{i-1}  (1-p)}{1 - p^n}, \qquad 1
@@ -267,10 +286,10 @@ We choose uniformly at random a small number of words from the
 unmodified vocabulary for our experiment.  In order that the inserted
 tokens do not have too low a frequency, only words which occur at least
 10 thousand times are chosen.  We also include the high-frequency
-stopword \word{the} for comparison.  Table \ref{word-frequency-counts}
+stopword \word{the} for comparison.  Table~\ref{word-frequency-counts}
 lists the words chosen for this experiment along with their frequencies.
 
-The replacement procedure of Section \ref{replacement-procedure} is then
+The replacement procedure of Section~\ref{replacement-procedure} is then
 performed for each of these words, using a geometric decay rate of $p =
 \tfrac{1}{2}$, and maximum value $n=20$, so that the 1st token is
 inserted with a probability of about $0.5$, the 2nd with a probability of
@@ -279,7 +298,7 @@ that ensure that, for each word, multiple tokens will be inserted with a
 frequency sufficient to survive the low-frequency cut-off of
 128.  A maximum value $n=20$ suffices for this choice of $p$, since
 $2^{20 + \log_2{128}}$ exceeds the maximum frequency of any token in
-the corpus.  Figure \ref{fig:word-frequency-experiment-text-cat}
+the corpus.  Figure~\ref{fig:word-frequency-experiment-text-cat}
 illustrates the effect of these modifications on a sample text, with a
 family of tokens \word{CAT\_i}, derived from the word \word{cat}.
 Notice that all occurrences of the word \word{cat} have been replaced
@@ -287,7 +306,7 @@ with the tokens \word{CAT\_i}.
 
 \begin{table}
 	\input{word-frequency-experiment-counts.tex}
-	\caption{Words chosen for the word frequency variation experiment, along with their frequency in the unmodified corpus. }
+	\caption{Words chosen for the word frequency experiment, along with their frequency in the unmodified corpus. }
 	\label{word-frequency-counts}
 \end{table}
 
@@ -296,7 +315,7 @@ with the tokens \word{CAT\_i}.
 	\input{word-frequency-experiment-text-cat.tex}
 	\end{mdframed}
 	\caption{Example sentences modified in the word frequency
-          experiment as per Section \ref{WFVEexisting}, where the word
+          experiment as per Section~\ref{WFVEexisting}, where the word
           \word{cat} is replaced with tokens \word{CAT\_i} using the
           truncated geometric distribution (\ref{distro}) with
           $p=\tfrac{1}{2}$ and $n=20$.}
@@ -316,7 +335,7 @@ that its relative frequency is $0.005$.  The co-occurrence
 distribution of \word{VOID} thus coincides with the unconditional word
 distribution.  The replacement procedure is then performed for this
 word, using the same values for $p$ and $n$ as above.
-Figure \ref{fig:word-frequency-experiment-text-void} shows the effect of
+Figure~\ref{fig:word-frequency-experiment-text-void} shows the effect of
 these modifications on a sample text, where a higher relative frequency of $0.05$ is used instead
 for illustrative purposes.  Although the probability of inserting token
 \word{VOID\_1} is twice that of inserting token \word{VOID\_2} and four
@@ -328,7 +347,7 @@ appear once in this small piece of text.
 	\input{word-frequency-experiment-text-void.tex}
 	\end{mdframed}
 	\caption{The same example sentences as in
-          Figure \ref{fig:word-frequency-experiment-text-cat} where
+          Figure~\ref{fig:word-frequency-experiment-text-cat} where
           instead of the word \word{cat} now the meaningless word
           \word{VOID} is replaced with tokens \word{VOID\_i}.  For
           illustrative purposes, the meaningless word \word{VOID} was
@@ -343,27 +362,28 @@ consider the effect of word frequency on the direction and on the length
 of word vectors separately.
 
 \subsubsection{Word frequency and vector direction}\label{WFVE-direction}
-Figure \ref{word-frequency-experiment-heatmap} shows the cosine
+Figure~\ref{word-frequency-experiment-heatmap} shows the cosine
 similarity of pairs of vectors representing some of the tokens used in
 this experiment.  Recall that the cosine similarity measures the extent
 to which two vectors have the same direction, taking a maximum value of
 $1$ and a minimum value of $-1$.  The number of different tokens
 associated with an experiment word is the number of times that its
-frequency can be halved and remain above the low-frequency cut-off of
+frequency can be halved and remains above the low-frequency cut-off of
 $128$.
 
 Consider first the words other than \word{the} and \word{VOID}.  These
-words typically occur in a limited number of distinct contexts, and
-so a limited number of samples is required to capture their
-co-occurrence distributions.  We therefore expect that the vectors
-representing the tokens derived from any of these words can be properly
-learned from the modified corpus, even though their combined frequency equals the frequency of that word in the original
-corpus.  The red blocks in Figure \ref{word-frequency-experiment-heatmap}
-clearly demonstrate that the direction of these vectors is constant for
-each family of tokens.  In other words, the direction of these vectors
-is only determined by the original word and is independent of how often
-that words appear, provided sufficient samples have been processed for
-the word vector to settle in its equilibrium direction.
+words typically occur in a limited number of distinct contexts, and so a
+limited number of samples is required to capture their co-occurrence
+distributions.  We therefore expect that the vectors representing the
+tokens derived from any of these words can be properly learned from the
+modified corpus, even though their combined frequency equals the
+frequency of that word in the original corpus.  The red blocks in
+Figure~\ref{word-frequency-experiment-heatmap} clearly demonstrate that
+the direction of these vectors is constant for each family of tokens.
+In other words, the direction of these vectors is only determined by the
+original word and is independent of how often that word appears,
+provided sufficient samples have been processed for the word vector to
+settle in its equilibrium direction.
 
 The artificial word \word{VOID}, on the other hand, occurs by
 construction in every context.  A much higher number of samples is
@@ -372,20 +392,20 @@ thereby to learn its word vector.  The same is true, but to a lesser
 extent, for the stopword \word{the}.  The difficulty of learning the
 vector representing \word{VOID\_i} or \word{THE\_i} increases with $i$,
 for the tokens occur increasingly less often.  This is consistent with
-Figure \ref{word-frequency-experiment-heatmap}, where it is apparent that
-the vectors representing \word{VOID\_i} for small $i$, say $i = 1,
+Figure~\ref{word-frequency-experiment-heatmap}, where it is apparent
+that the vectors representing \word{VOID\_i} for small $i$, say $i = 1,
 \dots, 5$, roughly share a common direction, while this is no longer
 true for higher values of $i$.  The same trend is apparent, although
 less extremely so, for the word \word{the}.  The vectors for the tokens
 \word{THE\_i} share a common direction for values of $i$ as high as
 $14$, before they start changing direction.  We conclude that these
-deviations are artifacts of poor learning due to an insufficient number of occurrences of these tokens.
-Table \ref{word-frequency-experiment-cosine-similarity}, showing the
-most similar words to each token \word{THE\_i}, supports this further.  In the
-discussions below, the tokens \word{VOID\_i} and
-\word{THE\_i} whose vectors have a cosine similarity less than $0.8$
-with \word{VOID\_1} and \word{THE\_1}, respectively are therefore
-discarded.
+deviations are artifacts of poor learning due to an insufficient number
+of occurrences of these tokens.
+Table~\ref{word-frequency-experiment-cosine-similarity}, showing the
+most similar words to each token \word{THE\_i}, supports this further.
+In the discussions below, the tokens \word{VOID\_i} and \word{THE\_i}
+whose vectors have a cosine similarity less than $0.8$ with
+\word{VOID\_1} and \word{THE\_1}, respectively, are therefore discarded.
 
 From these results, we conclude that word frequency has no effect on the
 direction of a word vector, given a sufficient number of samples to
@@ -393,7 +413,8 @@ learn the co-occurrence distribution of the word.
 
 \subsubsection{Word frequency and vector length}
 We next consider the effect of frequency on word vector length.
-Figure \ref{fig:word-frequency-experiment-graph} shows this relation for
+Throughout, we measure vector length using the Euclidean norm.
+Figure~\ref{fig:word-frequency-experiment-graph} shows this relation for
 individual words, both for the word vectors, represented by the weights
 of the first synaptic layer, syn0, in the word2vec neural network, and
 for the vectors represented by the weights of the second synaptic layer,
@@ -409,18 +430,18 @@ frequency of the word \word{protestant} can be halved at most $6$ times
 so that the frequency of the last token is still above the
 low-frequency cut-off.  Because all the points on a line share the same
 co-occurrence distribution, the left panel in
-Figure \ref{fig:word-frequency-experiment-graph} demonstrates conclusively
+Figure~\ref{fig:word-frequency-experiment-graph} demonstrates conclusively
 that length does indeed depend on frequency directly.  Moreover, this
 relation is seen to be approximately linear for each word considered.
 Notice also that the relative positions of the lengths of the word vectors associated
 with the experiment words are roughly independent of the frequency band,
-i.e. the plotted lines rarely cross.
+i.e., the plotted lines rarely cross.
 
 Notice the inflection of the syn1neg curve in
-Figure \ref{fig:word-frequency-experiment-graph} for \word{the} at
+Figure~\ref{fig:word-frequency-experiment-graph} for \word{the} at
 approximately $10^6$.  We have no explanation of this.  Also observe
 that the lengths of the vectors representing the meaningless tokens
-\word{VOID\_i} are approximately constant.  Since we already found the
+\word{VOID\_i} are approximately constant (about $2.5$).  Since we already found the
 direction to be also constant, it is sensible to speak of the word
 vector of \word{VOID} irrespective of its frequency.  In particular, the
 token \word{VOID\_1} may be taken as an approximation.
@@ -446,16 +467,15 @@ token \word{VOID\_1} may be taken as an approximation.
 
 \begin{sidewaysfigure*}
 	\centering{\includegraphics[scale=0.6]{word-frequency-experiment-graph}}
-	\caption{ Vector length vs. frequency for tokens derived from a
+	\caption{ Vector length vs.\ frequency for tokens derived from a
           few words chosen at random.  For each word, tokens of varying
           frequency but with the co-occurrence distribution of that word
           were inserted into the corpus, as described in
-          Section \ref{WFVE}.  The vectors are obtained from the first
+          Section~\ref{WFVE}.  The vectors are obtained from the first
           synaptic layer, syn0, of the word2vec neural network.  The
-          vectors obtained from the second layer, syn1neg, are
-          included for completeness.
-	  Legend entries are ordered by the L2-norm at the lowest-frequency
-  (i.e. left-most) sample point for the corresponding syn0 plot, descending.}
+          vectors obtained from the second layer, syn1neg, are included
+          for completeness.  Legend entries are ordered by vector length
+          of the left-most data point in the syn0 plot, descending.}
 	\label{fig:word-frequency-experiment-graph}
 \end{sidewaysfigure*}
 \end{section}
@@ -463,29 +483,31 @@ token \word{VOID\_1} may be taken as an approximation.
 \begin{section}{Varying co-occurrence noise}\label{CNVE}
 This second experiment is complementary to the first.  Whereas in the
 first experiment we studied the effect of word frequency on word vectors
-for fixed co-occurrence, we next study the effect of co-occurrence noise when the frequency is fixed.
-As before, we do so in a controlled manner.
+for fixed co-occurrence, we here study the effect of co-occurrence noise
+when the frequency is fixed.  As before, we do so in a controlled
+manner.
   
 \subsection{Generating noise}
-We take the noise distribution to be the (observed) unconditional word distribution.
-Thus noise can be added to the co-occurrence distribution of a word by simply interspersing occurrences of
-that word uniformly at random throughout the corpus.  A word that is
-consistently used in a distinctive context in the unmodified corpus thus
-appears in the modified corpus also in completely unrelated contexts.
-As in Section \ref{WFVE}, we choose a small number of words from the
-unmodified corpus for this experiment.  Table
-\ref{cooccurrence-noise-words} lists the words chosen, along with their
-frequencies in the corpus.
+We take the noise distribution to be the (observed) unconditional word
+distribution.  Thus noise can be added to the co-occurrence distribution
+of a word by simply interspersing occurrences of that word uniformly at
+random throughout the corpus.  A word that is consistently used in a
+distinctive context in the unmodified corpus thus appears in the
+modified corpus also in completely unrelated contexts.  As in
+Section~\ref{WFVE}, we choose a small number of words from the
+unmodified corpus for this experiment.
+Table~\ref{cooccurrence-noise-words} lists the words chosen, along with
+their frequencies in the corpus.
 
-For each of these words, the replacement procedure of Subsection
-\ref{replacement-procedure} is performed using a geometric rate of decay
-of $p = \tfrac{5}{6}$, and truncating the distribution at $n=8$.  For
-every replacement token (e.g. \word{CAT\_i}), occurrences of this
-token are subsequently interspersed uniformly at random throughout the
-corpus, such that the frequency of the replacement token is restored to
-that of the original word \word{cat}.  For example, if the original word
-\word{cat} occurred $1000$ times, then after the replacement procedure,
-\word{CAT\_2} occurs approximately $694$ times, so a further
+For each of these words, the replacement procedure of
+Section~\ref{replacement-procedure} is performed using a geometric rate
+of decay of $p = \tfrac{5}{6}$, and truncating the distribution at
+$n=8$.  For every replacement token (e.g. \word{CAT\_i}), occurrences of
+this token are subsequently interspersed uniformly at random throughout
+the corpus, such that the frequency of the replacement token is restored
+to that of the original word \word{cat}.  For example, if the original
+word \word{cat} occurred $1000$ times, then after the replacement
+procedure, \word{CAT\_2} occurs approximately $694$ times, so a further
 (approximately) $306$ random occurrences of \word{CAT\_2} are
 interspersed throughout the corpus.  Thus the word \word{cat} is removed
 from the corpus, and a family of tokens \word{CAT\_i}, $1 \leqslant i
@@ -493,7 +515,7 @@ from the corpus, and a family of tokens \word{CAT\_i}, $1 \leqslant i
 the word \word{cat}, but their co-occurrence distributions, while based
 on that of \word{cat}, have an increasing amount of noise.
 
-Figure \ref{fig:co-occurrence-noise-experiment-text} illustrates the
+Figure~\ref{fig:co-occurrence-noise-experiment-text} illustrates the
 effect of this modification in the case where the only word chosen is
 \word{cat}.  The original text in this case concerned both cats and
 dogs.  Notice that the word \word{cat} has been replaced entirely in the
@@ -506,7 +528,7 @@ The proportion of occurrences of the token \word{CAT\_i} that arise by
 replacing the word \word{cat} is $P_{5/6, 8}(i)$, and the proportion
 that arise from randomly interspersing this token throughout the corpus
 is $r_i := 1 - P_{5/6, 8}(i)$.  The particular value of $p$ (large
-compared to that of Section \ref{WFVE}) was chosen so that the
+compared to that of Section~\ref{WFVE}) was chosen so that the
 proportion of noise $r_i$ did not increase too quickly with $i$.  These
 proportions are the sampling points on our axis of variation, and this
 value of $p$ (together with the choice of $n$) assures a reasonable
@@ -532,47 +554,26 @@ of course, have been used equally well.
 \end{figure}
 
 \begin{subsection}{Experimental results}
-Figure \ref{fig:co-occurrence-noise-heatmap} shows the cosine similarity
+Figure~\ref{fig:co-occurrence-noise-heatmap} shows the cosine similarity
 of pairs of vectors representing some of the tokens used in this
 experiment.  The figure clearly demonstrates that vectors representing
 tokens derived from the same word all share a common direction.  Thus
-co-occurrence noise has no discernible effect on the direction of word vectors.
+co-occurrence noise has no discernible effect on the direction of word
+vectors.
 
-On the other hand, for any experiment word, the introduced tokens mark
-intermediate points on a path in the space of distributions over the
-vocabulary, beginning at the co-occurrence distribution of the word and ending
-at the unconditional word frequency distribution, i.e. the co-occurrence
-distribution of \word{VOID}.
-Thus, a priori, the word vectors for the introduced tokens are intermediate
-steps on a path from the word vector of the original word to that of
-\word{VOID} (recall from Subsection \ref{WFVE-results} that word vector of
-\word{VOID} is approximately independent of its frequency).
-Since the word vector for \word{VOID} is close to the origin (see Subsection \ref{WFVE-results}), it may therefore be concluded that this path is approximately linear.
+The left panel in Figure~\ref{fig:co-occurrence-noise-graph} reveals
+that word vector length varies more or less linearly with the proportion
+of noise in the co-occurrence distribution of the word.  This figure motivates an
+interpretation of vector length, within a sufficiently narrow frequency
+band, as a measure of the absence of co-occurrence noise, or put
+differently, of the extent to which a word carries the meaning of a
+distinctive context.
+The right panel of Figure~\ref{fig:co-occurrence-noise-graph} shows that the
+syn1neg vector length does not vary with the proportion of co-occurrence noise.
 
-The left panel in Figure \ref{fig:co-occurrence-noise-graph} reveals that vector length varies more or less
-linearly with the proportion $r$ of noise in the co-occurrence
-distribution.  This figure motivates an interpretation of vector
-length, within a sufficiently narrow frequency band, as a measure of the
-absence of co-occurrence noise, or put differently, of the extent to
-which a word carries the meaning of a distinctive context.
-
-It was observed that the average effect of noise occurrences on word vector direction was negligible.
-If the average effect of noise occurrences on word vector \textit{length} were also negligible, then the phenomenon depicted in Figure \ref{fig:co-occurrence-noise-graph} could be accounted for by the word frequency variation effects described in Section \ref{WFVE}.
-For then the horizontal axis of Figure \ref{fig:co-occurrence-noise-graph} could be reinterpreted as
-denoting word frequency by reading the graph from right to left,
-and a similar picture to Figure \ref{fig:word-frequency-experiment-graph} would emerge, namely that the
-word vector length increases more or less linearly with word frequency.
-This can not, however, be the complete picture, for the vectors
-represented by the second synaptic layer, syn1neg, show a different
-behavior in the two figures.  In particular, the length of these vectors
-is seen from the right panel of Figure \ref{fig:co-occurrence-noise-graph}
-to be completely insensitive to noise, i.e. frequency in our
-reinterpretation, whereas the length of those shown in the right panel
-of Figure \ref{fig:word-frequency-experiment-graph} does depend on
-frequency.
-We conclude that co-occurrence noise does indeed effect word vector length.
-In particular, the results of the two experiments illustrate distinct phenomena.
-
+Recall from Section~\ref{WFVE-results} that the word vector for \word{VOID} is independent of the frequency of \word{VOID}, and is non-zero.
+Since the noise distribution coincides with the co-occurrence distribution of \word{VOID}, the word vectors for the experiment words must tend to the word vector for \word{VOID} as the proportion of noise in their co-occurrence distributions approaches $1$.
+This is not discernible in Figure~\ref{fig:co-occurrence-noise-heatmap} since the word vector for \word{VOID} is relatively close to the origin.
 
 \begin{figure}
 	\includegraphics[scale=0.5]{cooccurrence-noise-heatmap}
@@ -587,14 +588,15 @@ In particular, the results of the two experiments illustrate distinct phenomena.
 
 \begin{sidewaysfigure*}
 	\includegraphics[scale=0.6]{cooccurrence-noise-graph}
-	\caption{ Vector length vs. proportion of co-occurrence noise
+	\caption{ Vector length vs.\ proportion of occurrences from the noise distribution
           for words chosen for this experiment.  For each word, tokens
           of equal frequency but with increasing proportion of
           co-occurrence noise were inserted into the corpus, as
-          described in section \ref{CNVE}.  The word vectors are
+          described in Section~\ref{CNVE}.  The word vectors are
           obtained from the first synaptic layer, syn0.  The second
-          layer, syn1neg, is included for completeness.  
-	  Legend entries are ordered by the left-most value of the corresponding syn0 plot, descending.}
+          layer, syn1neg, is included for completeness.  Legend entries
+          are ordered by vector length of the left-most data point in
+          the syn0 plot, descending.}
 	\label{fig:co-occurrence-noise-graph}
 \end{sidewaysfigure*}
 
@@ -604,26 +606,43 @@ In particular, the results of the two experiments illustrate distinct phenomena.
 
 
 \begin{section}{Discussion}\label{future-directions}
-Our principle contribution has been to demonstrate that controlled experiments can be used to gain insight into a word embedding.
-These experiments can be carried out for any word embedding (or indeed language model), because they are achieved via modification of the training corpus.
-Indeed, the experiments even do not require knowledge of the model implementation.
-It would naturally be of interest to perform these experiments for other word embeddings other than word2vec CBOW, such as skipgrams and GloVe, as well as for different hyperparameters settings.
+Our principle contribution has been to demonstrate that controlled
+experiments can be used to gain insight into a word embedding.  These
+experiments can be carried out for any word embedding (or indeed
+language model), for they are achieved via modification of the training
+corpus only.  They do not require knowledge of the model implementation.
+It would naturally be of interest to perform these experiments for other
+word embeddings other than word2vec CBOW, such as skipgrams and GloVe,
+as well as for different hyperparameters settings.
 
-More elaborate experiments could be carried out.
-For instance, by introducing tokens into the corpus that mix, with varying proportions, the co-occurrence distributions of two words, the path between the word vectors in the feature space could be studied.
-The co-occurrence noise variation experiment described here would be a special case of such an experiment where one of the two words was \word{VOID}.
+More elaborate experiments could be carried out.  For instance, by
+introducing tokens into the corpus that mix, with varying proportions,
+the co-occurrence distributions of two words, the path between the word
+vectors in the feature space could be studied.  The co-occurrence noise
+experiment described here would be a special case of such an
+experiment where one of the two words was \word{VOID}.
 
-Questions pertaining to word2vec in particular arise naturally from the results of the experiments.
-Figures \ref{fig:word-frequency-experiment-graph} and \ref{fig:co-occurrence-noise-graph}, for example, demonstrate the word vectors obtained from the first synaptic layer, syn0, have very different properties from those that could be obtained from the second layer, syn1neg, which are typically discarded.
-These differences warrant further investigation.
+Questions pertaining to word2vec in particular arise naturally from the
+results of the experiments.
+Figures~\ref{fig:word-frequency-experiment-graph} and
+\ref{fig:co-occurrence-noise-graph}, for example, demonstrate that the
+word vectors obtained from the first synaptic layer, syn0, have very
+different properties from those that could be obtained from the second
+layer, syn1neg.  These differences warrant further investigation.
 
-The co-occurrence distribution of \word{VOID} is the unconditional frequency distribution, and in this sense pure background noise.
-Thus the word vector of \word{VOID} is a special point in the feature space.
-Figure \ref{fig:word-frequency-experiment-graph} shows that this point is not at the origin of the feature space (i.e. is not the zero vector).
-The origin, however, is implicitly the point of reference in the word2vec word similarity task.
-This raises the question of whether improved performance on the similarity task could be achieved by transforming the feature space (or modifying the model) such that the representation of pure noise (i.e. the vector for \word{VOID}) is at the origin of the transformed feature space. 
+The co-occurrence distribution of \word{VOID} is the unconditional
+frequency distribution, and in this sense pure background noise.  Thus
+the word vector of \word{VOID} is a special point in the feature space.
+Figure~\ref{fig:word-frequency-experiment-graph} shows that this point
+is not at the origin of the feature space, i.e., is not the zero vector.
+The origin, however, is implicitly the point of reference in word2vec
+word similarity tasks.  This raises the question of whether improved
+performance on similarity tasks could be achieved by transforming the
+feature space or modifying the model such that the representation of
+pure noise, i.e., the vector for \word{VOID}, is at the origin of the
+transformed feature space.
 
-%\textcolor{red}{can it be argued that the feature space must be fundamentally Euclidean, given that the path marked by the vectorisations of intermediate words is a straight line? i.e. if such paths maybe considered as ``geodesics'' between words, and we show that these geodesics appear as straight lines when an Euclidean metric is imposed, then suggests that the Euclidean metric is in fact a good choice.  what would happen if we chose another metric?}
+%\textcolor{red}{can it be argued that the feature space must be fundamentally Euclidean, given that the path marked by the vectorisations of intermediate words is a straight line? i.e., if such paths maybe considered as ``geodesics'' between words, and we show that these geodesics appear as straight lines when an Euclidean metric is imposed, then suggests that the Euclidean metric is in fact a good choice.  what would happen if we chose another metric?}
 
 
 \end{section}
