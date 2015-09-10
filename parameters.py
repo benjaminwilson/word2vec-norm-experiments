@@ -9,5 +9,5 @@ experiment_word_occurrence_min = 10000
 word_freq_experiment_ratio = 1./2
 word_freq_experiment_power_max = 20
 
-coocc_noise_experiment_ratio = 5./6
-coocc_noise_experiment_power_max = 8
+coocc_noise_experiment_max_value = 7
+coocc_noise_experiment_freq_reduction = 2. / (coocc_noise_experiment_max_value + 1)

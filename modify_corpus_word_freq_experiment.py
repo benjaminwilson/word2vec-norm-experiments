@@ -21,8 +21,9 @@ wf_experiment_words.append(meaningless_token)
 
 # perform the replacement procedure
 word_samplers = {}
+distn = lambda i: truncated_geometric_proba(word_freq_experiment_ratio, i, word_freq_experiment_power_max)
 for word in wf_experiment_words:
-    word_samplers[word] = truncated_geometric_sampling(word, word_freq_experiment_ratio, word_freq_experiment_power_max)
+    word_samplers[word] = distribution_to_sampling_function(word, distn, word_freq_experiment_power_max)
 
 with open(intermediate_file) as f_in:
     replace_words(word_samplers, f_in, sys.stdout)

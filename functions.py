@@ -65,14 +65,32 @@ def truncated_geometric_proba(ratio, i, n):
     """
     return (ratio ** (i - 1)) * (1 - ratio) / (1 - ratio ** n)
 
-def truncated_geometric_sampling(word, ratio, max_value):
+def distribution_to_sampling_function(word, dist_fn, max_value):
     """
-    returns a function that samples from the truncated geometric distribution, truncated
-    at max_value, returning WORD_1, .. WORD_<max_value>
+    returns a function that samples from the given distribution on [1 ..
+    max_value], returning WORD_1, .. WORD_<max_value>
     """
     outcomes = [build_experiment_token(word, value) for value in range(1, max_value + 1)]
-    probs = np.array([truncated_geometric_proba(ratio, i, max_value) for i in range(1, max_value + 1)])
+    probs = np.array([dist_fn(i) for i in range(1, max_value + 1)])
     return lambda: np.random.choice(outcomes, p=probs)
+
+def evenly_spaced_proba(i, M): 
+    """
+    A probability distribution on [1 .. M] with the property that the
+    probability densities are evenly spaced, i.e. p(i) - p(i+1) = c for all i.
+    The sequence is decreasing, so c > 0.
+    """
+    return 2. * (M - i + 1) / (M * (M+1))
+
+def noise_proportion(i, M):
+    """
+    Assuming that the evenly_spaced_proba(i,M) distribution was used and that
+    the total number of occurrences (original + noise) is given by
+        2 * #original / (M+1),
+    irrespective of i, return the expected proportion of
+    noise occurrences.
+    """
+    return 1 - 0.5 * (M + 1) * evenly_spaced_proba(i, M)
 
 def intersperse_words(interspersal_rates, f_in, f_out):
     """

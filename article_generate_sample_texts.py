@@ -21,7 +21,8 @@ def write_markup(raw_output, f_out):
 # PERFORM THE REPLACEMENT PROCEDURE FOR THE WORD FREQUENCY EXPERIMENT FOR THE WORD "CAT"
 
 word = 'cat'
-word_samplers = {word: truncated_geometric_sampling(word, word_freq_experiment_ratio, word_freq_experiment_power_max)}
+distn = lambda i: truncated_geometric_proba(word_freq_experiment_ratio, i, word_freq_experiment_power_max)
+word_samplers = {word: distribution_to_sampling_function(word, distn, word_freq_experiment_power_max)}
 
 tmp_file = StringIO()
 with file('article/word-frequency-experiment-text-cat.input') as f_in:
@@ -39,16 +40,17 @@ with file('article/word-frequency-experiment-text-void.input') as f_in:
 tmp_file1.seek(0)
 
 tmp_file2 = StringIO()
-word_samplers = {meaningless_token: truncated_geometric_sampling(meaningless_token, word_freq_experiment_ratio, word_freq_experiment_power_max)}
+distn = lambda i: truncated_geometric_proba(word_freq_experiment_ratio, i, word_freq_experiment_power_max)
+word_samplers = {meaningless_token: distribution_to_sampling_function(meaningless_token, distn, word_freq_experiment_power_max)}
 replace_words(word_samplers, tmp_file1, tmp_file2)
 
 with file('article/word-frequency-experiment-text-void.tex', 'w') as f_out:
     write_markup(tmp_file2.getvalue(), f_out)
 
 # COOCCURRENCE NOISE EXPERIMENT
-coocc_noise_experiment_power_max = 3 # better for the example, be sure to note in caption
 word = 'cat'
-word_samplers = {word: truncated_geometric_sampling(word, coocc_noise_experiment_ratio, coocc_noise_experiment_power_max)}
+distn = lambda i: evenly_spaced_proba(i, coocc_noise_experiment_max_value)
+word_samplers = {word: distribution_to_sampling_function(word, distn, coocc_noise_experiment_max_value)}
 
 with file('article/cooccurrence-noise-experiment.input') as f_in:
     counts = count_words(f_in)
@@ -59,11 +61,11 @@ with file('article/cooccurrence-noise-experiment.input') as f_in:
     replace_words(word_samplers, f_in, tmp_file1)
 tmp_file1.seek(0)
 
-# add noise to the cooccurrence distributions of experiment 2 words
+# add noise to the cooccurrence distribution
 token_freq_dict = dict()
-target_freq = counts[word] * 1. / total_words
-for i in range(1, coocc_noise_experiment_power_max + 1):
-    current_freq = target_freq * truncated_geometric_proba(coocc_noise_experiment_ratio, i, coocc_noise_experiment_power_max)
+target_freq = counts[word] * 1. * coocc_noise_experiment_freq_reduction / total_words
+for i in range(1, coocc_noise_experiment_max_value + 1):
+    current_freq = counts[word] * evenly_spaced_proba(i, coocc_noise_experiment_max_value)
     token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 
 tmp_file2 = StringIO()

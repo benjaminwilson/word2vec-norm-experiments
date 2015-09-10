@@ -149,9 +149,9 @@ ax_syn1neg.set_color_cycle(colorcycle)
 ax_syn1neg.set_title('syn1neg', y=1.04)
     
 def plot_for_word(ax, word, series, **kwargs):
-    exponents = filter(lambda i: build_experiment_token(word, i) in stats.index, range(1, coocc_noise_experiment_power_max + 1))
-    idxs = [build_experiment_token(word, i) for i in exponents]
-    x = [1 - coocc_noise_experiment_ratio ** exponent for exponent in exponents]
+    outcomes = range(1, coocc_noise_experiment_max_value + 1)
+    idxs = [build_experiment_token(word, i) for i in outcomes]
+    x = [noise_proportion(i, coocc_noise_experiment_max_value) for i in outcomes]
     y = series.loc[idxs]
     marker = ['o', 's', 'D'][ord(word[0]) % 3]
     return ax.plot(x, y, marker=marker, **kwargs)[0]
@@ -175,7 +175,7 @@ plt.savefig('outputs/cooccurrence-noise-graph.eps')
 idxs = []
 ticks = []
 for word in random.sample(coocc_noise_experiment_words, 4):
-    candidates = [build_experiment_token(word, i) for i in range(1, coocc_noise_experiment_power_max + 1)]
+    candidates = [build_experiment_token(word, i) for i in range(1, coocc_noise_experiment_max_value + 1)]
     tokens = [token for token in candidates if token in vectors_syn0.index]
     idxs += tokens
     ticks += tokens[:2] + ['.  '] * len(tokens[2:-1]) + tokens[-1:]

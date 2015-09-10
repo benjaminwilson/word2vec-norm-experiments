@@ -15,8 +15,9 @@ total_words = sum(counts.values())
 
 # perform the replacement procedure
 word_samplers = {}
+distn = lambda i: evenly_spaced_proba(i, coocc_noise_experiment_max_value)
 for word in cn_experiment_words:
-    word_samplers[word] = truncated_geometric_sampling(word, coocc_noise_experiment_ratio, coocc_noise_experiment_power_max)
+    word_samplers[word] = distribution_to_sampling_function(word, distn, coocc_noise_experiment_max_value)
 
 intermediate_file = 'delete.me.word_freq_experiment'
 with open(intermediate_file, 'w') as f_out:
@@ -25,9 +26,9 @@ with open(intermediate_file, 'w') as f_out:
 # add noise to the cooccurrence distributions
 token_freq_dict = dict()
 for word in cn_experiment_words:
-    target_freq = counts[word] * 1. / total_words
-    for i in range(1, coocc_noise_experiment_power_max + 1):
-        current_freq = target_freq * truncated_geometric_proba(coocc_noise_experiment_ratio, i, coocc_noise_experiment_power_max)
+    target_freq = counts[word] * 1. * coocc_noise_experiment_freq_reduction / total_words
+    for i in range(1, coocc_noise_experiment_max_value + 1):
+        current_freq = counts[word] * evenly_spaced_proba(i, coocc_noise_experiment_max_value)
         token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 
 with open(intermediate_file) as f_in:
