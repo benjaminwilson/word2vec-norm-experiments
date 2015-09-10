@@ -5,7 +5,7 @@ import pandas as pd
 from scipy.spatial.distance import pdist, cdist
 import matplotlib.pyplot as plt
 from collections import defaultdict
-from parameters import random_seed, experiment_word_occurrence_min
+from parameters import random_seed, experiment_word_occurrence_min, coocc_noise_experiment_freq_reduction
 
 def count_words(f):
     """
@@ -79,18 +79,19 @@ def evenly_spaced_proba(i, M):
     A probability distribution on [1 .. M] with the property that the
     probability densities are evenly spaced, i.e. p(i) - p(i+1) = c for all i.
     The sequence is decreasing, so c > 0.
+    p(M) = 0
     """
-    return 2. * (M - i + 1) / (M * (M+1))
+    return 2. * (M - i) / (M * (M-1))
 
 def noise_proportion(i, M):
     """
     Assuming that the evenly_spaced_proba(i,M) distribution was used and that
     the total number of occurrences (original + noise) is given by
-        2 * #original / (M+1),
+        #original * coocc_noise_experiment_freq_reduction
     irrespective of i, return the expected proportion of
     noise occurrences.
     """
-    return 1 - 0.5 * (M + 1) * evenly_spaced_proba(i, M)
+    return 1 - evenly_spaced_proba(i, M) / coocc_noise_experiment_freq_reduction
 
 def intersperse_words(interspersal_rates, f_in, f_out):
     """

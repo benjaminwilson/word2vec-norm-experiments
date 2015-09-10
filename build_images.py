@@ -163,7 +163,7 @@ for word in words:
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-ax_syn0.set_ylim(2.5, 8.5)
+#ax_syn0.set_ylim(2.5, 8.5)
 ax_syn0.set_xlim(0, 1)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)

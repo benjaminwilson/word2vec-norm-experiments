@@ -10,11 +10,13 @@ word_freq_experiment_words=outputs/word_freq_experiment_words
 coocc_noise_experiment_words=outputs/coocc_noise_experiment_words
 
 .PHONY: clean experiment
-experiment: $(vectors_binary_syn0) $(vectors_binary_syn1neg)
+experiment: $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus)
 clean:
 	rm $(corpus_modified)
 	rm $(vectors_binary_syn0)
 	rm $(vectors_binary_syn1neg)
+	rm $(word_counts_unmodified_corpus)
+	rm $(word_counts_modified_corpus)
 
 $(corpus_unmodified):
 	wget -qO- http://lateral-datadumps.s3-website-eu-west-1.amazonaws.com/wikipedia_utf8_filtered_20pageviews.csv.gz \
@@ -23,6 +25,8 @@ $(corpus_unmodified):
 		> $(corpus_unmodified)
 $(word_counts_unmodified_corpus): $(corpus_unmodified)
 	python count_words.py > $(word_counts_unmodified_corpus) < $(corpus_unmodified)	
+$(word_counts_modified_corpus): $(corpus_modified)
+	python count_words.py > $(word_counts_modified_corpus) < $(corpus_modified)
 $(word_freq_experiment_words): $(word_counts_unmodified_corpus)
 	python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words) < $(word_counts_unmodified_corpus)
 	cat $(word_counts_unmodified_corpus) | grep ^the, >> $(word_freq_experiment_words)
@@ -33,8 +37,7 @@ $(corpus_modified): $(corpus_unmodified) $(word_counts_unmodified_corpus) $(word
 		| python modify_corpus_word_freq_experiment.py $(word_freq_experiment_words) $(word_counts_unmodified_corpus) \
 		| python modify_corpus_coocc_noise_experiment.py $(coocc_noise_experiment_words) $(word_counts_unmodified_corpus) \
 		> $(corpus_modified)
-$(word_counts_modified_corpus): $(corpus_modified)
-	 python count_words.py > $(word_counts_modified_corpus) < $(corpus_modified)
+	python count_words.py > $(word_counts_modified_corpus) < $(corpus_modified)
 word2vec: word2vec.c
 	$(CC) word2vec.c -o word2vec $(CFLAGS)
 $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)

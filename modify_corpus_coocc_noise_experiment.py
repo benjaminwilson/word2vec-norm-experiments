@@ -28,7 +28,7 @@ token_freq_dict = dict()
 for word in cn_experiment_words:
     target_freq = counts[word] * 1. * coocc_noise_experiment_freq_reduction / total_words
     for i in range(1, coocc_noise_experiment_max_value + 1):
-        current_freq = counts[word] * evenly_spaced_proba(i, coocc_noise_experiment_max_value)
+        current_freq = counts[word] * evenly_spaced_proba(i, coocc_noise_experiment_max_value) / total_words
         token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 
 with open(intermediate_file) as f_in:
