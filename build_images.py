@@ -8,7 +8,7 @@ import sys
 from parameters import *
 from functions import *
 
-random.seed(0) # fix seed so that we can refer to the randomly chosen words in the article body
+random.seed(1) # fix seed so that we can refer to the randomly chosen words in the article body
 
 vectors_syn0_filename = sys.argv[1]
 vectors_syn1neg_filename = sys.argv[2]
@@ -143,7 +143,7 @@ ax_syn0.set_ylabel('vector length')
 ax_syn0.set_color_cycle(colorcycle)
 ax_syn0.set_title('syn0', y=1.04)
 
-ax_syn1neg = plt.subplot(132, sharex=ax_syn0, sharey=ax_syn0)
+ax_syn1neg = plt.subplot(132, sharex=ax_syn0)
 ax_syn1neg.set_xlabel('Proportion of occurrences from noise distribution')
 ax_syn1neg.set_color_cycle(colorcycle)
 ax_syn1neg.set_title('syn1neg', y=1.04)
@@ -163,7 +163,8 @@ for word in words:
 for word in words:
     plot_for_word(ax_syn1neg, word, stats.L2_norm_syn1neg)
 
-#ax_syn0.set_ylim(2.5, 8.5)
+ax_syn0.set_ylim(0, 30)
+ax_syn1neg.set_ylim(0, 15)
 ax_syn0.set_xlim(0, 1)
 
 _ = fig.legend(lines, words, bbox_to_anchor=(0.76, 0.56), loc='center', fontsize=14, frameon=False)
