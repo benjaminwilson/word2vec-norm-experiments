@@ -5,6 +5,7 @@
 \usepackage{hyperref}
 \usepackage{mdframed}
 \usepackage{rotating}
+
 \usepackage[outdir=./]{epstopdf}
 
 \usepackage{graphics,graphicx}
@@ -43,13 +44,15 @@
         embeddings is proposed.  Controlled experiments, achieved
         through modifications of the training corpus, permit the
         demonstration of direct relations between word properties and
-        word vector direction and length.  The new approach is
-        demonstrated using the word2vec CBOW model with experiments that
+        word vector direction and length.  The approach is demonstrated
+        using the word2vec CBOW model with experiments that
         independently vary word frequency and word co-occurrence noise.
         The experiments reveal that word vector length depends more or
         less linearly on both word frequency and the level of noise in
         the co-occurrence distribution of the word.  The coefficients of
-        linearity depend upon the word.
+        linearity depend upon the word.  The special vector in feature
+        space, defined by the (artificial) word with pure noise in its
+        co-occurrence distribution, is found to be small but non-zero.
 \end{abstract} 
 
 \begin{section}{Introduction}
@@ -120,8 +123,15 @@ distribution is fixed, then word vector length increases with word
 frequency.  If, on the other hand, word frequency is held constant, then
 word vector length decreases as the level of noise in the co-occurrence
 distribution of the word is increased.  We show furthermore that the
-direction of the word vectors is independent of both word frequency and
-co-occurrence noise.
+direction of the word vectors is independent of word frequency and only
+moderately depends upon co-occurrence noise.  When noise is added to the
+co-occurrence distribution of a word, the corresponding vector smoothly
+interpolates between the original word vector and a small vector
+perpendicular to it that represents a word with pure noise in its
+co-occurrence distribution.  Surprisingly, this special vector in the feature
+space, obtained by interspersing a token uniformly at random throughout
+the corpus with a frequency sufficiently large to sample all contexts, is
+non-zero.
 
 This paper is structured as follows.  Section~\ref{related-work} draws
 connections to related work, while Section~\ref{corpus-and-model} describes
@@ -136,6 +146,7 @@ and possible future directions.
 \end{section}
 
 \begin{section}{Related work}\label{related-work}
+\mar{move to other paper?}
 Our notion of word significance is reminiscent of the concept of
 ``contextual distinctiveness'' introduced earlier by McDonald and
 Shillcock \cite{mcdonald2001contextual}.  They define the contextual
@@ -156,7 +167,7 @@ randomly chosen from equally divided frequency bands.  Furthermore, the
 authors considered only co-occurrence with the $500$ most frequent
 content words.  This significant restriction, necessary in their case in
 order to reduce the variance of the estimates of their measure of
-contextual distinctiveness, does not apply in our study.
+contextual distinctiveness, does not apply in our study. 
 
 Our experimental finding that word vector length decreases with
 co-occurrence noise is related to earlier work by Vecchi, Baroni, and
@@ -179,7 +190,7 @@ deviant adjective-noun composites.  Using a few hundred adjective-noun
 composites selected by humans for evaluation, they found that deviant
 composites have a shorter vector than acceptable ones, in accordance
 with their expectation.  In contrast to their work, our approach does
-not require extensive human evaluation.
+not require human annotation.
 
 Recent theoretical work \cite{Arora2015} has approached the problem of
 explaining the so-called ``compositionality'' property exhibited by some
@@ -245,15 +256,16 @@ GitHub.\footnote{\url{https://github.com/benjaminwilson/word2vec-norm-experiment
 
 \begin{subsection}{Replacement procedure}\label{replacement-procedure}
 In the experiments detailed below, we modify the corpus in a controlled
-manner by introducing tokens into the corpus via a replacement procedure
-as follows.  Consider a word, say \word{cat}.  For each occurrence of
-this word, a sample $i$, $1 \leqslant i \leqslant n$ is drawn from a
-truncated geometric distribution, and that occurrence of the word
-\word{cat} is replaced with the token \word{CAT\_i}.  In this way, the
-word \word{cat} is replaced throughout the corpus by a family of tokens
-with varying frequencies but approximately the same co-occurrence
-distribution as \word{cat}.  That is, all these tokens are used in
-roughly the same contexts as the original word.
+manner by introducing tokens into the corpus via a replacement
+procedure.  For the frequency experiment, the procedure is as follows.
+Consider a word, say \word{cat}.  For each occurrence of this word, a
+sample $i$, $1 \leqslant i \leqslant n$ is drawn from a truncated
+geometric distribution, and that occurrence of the word \word{cat} is
+replaced with the token \word{CAT\_i}.  In this way, the word \word{cat}
+is replaced throughout the corpus by a family of tokens with varying
+frequencies but approximately the same co-occurrence distribution as
+\word{cat}.  That is, all these tokens are used in roughly the same
+contexts as the original word.
 
 The geometric distribution is truncated to limit the number of tokens
 inserted into the corpus.  For any choice $0 < p < 1$ and maximum value
@@ -269,6 +281,16 @@ The factor in the denominator, which tends to unity in the limit $n \to
 because the probabilities decay exponentially base $p$ as a function of
 $i$.  Of course, other distributions might equally well have been chosen
 for the experiments.
+
+For the noise experiment, we take instead of a geometric distribution,
+the distribution
+\begin{equation}
+\label{distro2} 
+P_n (i) = \frac{2 (n-i)}{n(n-1)} , \qquad 1 \leqslant i \leqslant n.
+\end{equation} 
+We have chosen this distribution for the noise experiment, because it
+leads to evenly spaced proportions of co-occurrence noise that cover the entire interval
+$[0,1]$.
 \end{subsection}
 \end{section}
 
@@ -324,20 +346,21 @@ with the tokens \word{CAT\_i}.
 
 \end{subsection}
 
-\begin{subsection}{Tokens derived from an artificial, meaningless word}\label{WFVEmeaningless}
+\begin{subsection}{Tokens derived from an artificial, meaningless word}
+\label{WFVEmeaningless}
 Whereas the tokens introduced above all replace an existing word that
 carries a meaning, we now include for comparison a high-frequency,
 meaningless word.  We choose to introduce an artificial, entirely
 meaningless word \word{VOID} into the corpus, rather than choose an
 existing (stop)word whose meaninglessness is only supposed.  To achieve
-this, we intersperse the word uniformly at random throughout the corpus so
-that its relative frequency is $0.005$.  The co-occurrence
+this, we intersperse the word uniformly at random throughout the corpus
+so that its relative frequency is $0.005$.  The co-occurrence
 distribution of \word{VOID} thus coincides with the unconditional word
 distribution.  The replacement procedure is then performed for this
 word, using the same values for $p$ and $n$ as above.
 Figure~\ref{fig:word-frequency-experiment-text-void} shows the effect of
-these modifications on a sample text, where a higher relative frequency of $0.05$ is used instead
-for illustrative purposes.  Although the probability of inserting token
+these modifications on a sample text, where a higher relative frequency
+of $0.05$ is used instead for illustrative purposes.  Although the probability of inserting token
 \word{VOID\_1} is twice that of inserting token \word{VOID\_2} and four
 times that of inserting token \word{VOID\_3}, these three tokens all
 appear once in this small piece of text.
@@ -351,10 +374,13 @@ appear once in this small piece of text.
           instead of the word \word{cat} now the meaningless word
           \word{VOID} is replaced with tokens \word{VOID\_i}.  For
           illustrative purposes, the meaningless word \word{VOID} was
-          here interspersed with a relative frequency of $0.05$.}
+          here interspersed with a relative frequency of
+          $0.05$. }
 	\label{fig:word-frequency-experiment-text-void}
 \end{figure}
 \end{subsection}
+
+
 
 \subsection{Experimental results}\label{WFVE-results}
 We next present the results of the word frequency experiment. We
@@ -427,24 +453,24 @@ tokens \word{PROTESTANT\_1}, \word{PROTESTANT\_2}, \dots,
 \word{PROTESTANT\_6}.  Again, the number of points on the line is
 determined by the frequency of the original word.  For example, the
 frequency of the word \word{protestant} can be halved at most $6$ times
-so that the frequency of the last token is still above the
-low-frequency cut-off.  Because all the points on a line share the same
-co-occurrence distribution, the left panel in
-Figure~\ref{fig:word-frequency-experiment-graph} demonstrates conclusively
-that length does indeed depend on frequency directly.  Moreover, this
-relation is seen to be approximately linear for each word considered.
-Notice also that the relative positions of the lengths of the word vectors associated
-with the experiment words are roughly independent of the frequency band,
-i.e., the plotted lines rarely cross.
+so that the frequency of the last token is still above the low-frequency
+cut-off.  Because all the points on a line share the same co-occurrence
+distribution, the left panel in
+Figure~\ref{fig:word-frequency-experiment-graph} demonstrates
+conclusively that length does indeed depend on frequency directly.
+Moreover, this relation is seen to be approximately linear for each word
+considered.  Notice also that the relative positions of the lengths of
+the word vectors associated with the experiment words are roughly
+independent of the frequency band, i.e., the plotted lines rarely cross.
 
 Notice the inflection of the syn1neg curve in
 Figure~\ref{fig:word-frequency-experiment-graph} for \word{the} at
 approximately $10^6$.  We have no explanation of this.  Also observe
 that the lengths of the vectors representing the meaningless tokens
-\word{VOID\_i} are approximately constant (about $2.5$).  Since we already found the
-direction to be also constant, it is sensible to speak of the word
-vector of \word{VOID} irrespective of its frequency.  In particular, the
-token \word{VOID\_1} may be taken as an approximation.
+\word{VOID\_i} are approximately constant (about $2.5$).  Since we
+already found the direction to be also constant, it is sensible to speak
+of the word vector of \word{VOID} irrespective of its frequency.  In
+particular, the token \word{VOID\_1} may be taken as an approximation.
 
 \begin{figure}
 	\includegraphics[scale=0.5]{word-frequency-experiment-heatmap}
@@ -489,7 +515,7 @@ manner.
   
 \subsection{Generating noise}
 We take the noise distribution to be the (observed) unconditional word
-distribution.  Thus noise can be added to the co-occurrence distribution
+distribution.  Noise can then be added to the co-occurrence distribution
 of a word by simply interspersing occurrences of that word uniformly at
 random throughout the corpus.  A word that is consistently used in a
 distinctive context in the unmodified corpus thus appears in the
@@ -500,20 +526,32 @@ Table~\ref{cooccurrence-noise-words} lists the words chosen, along with
 their frequencies in the corpus.
 
 For each of these words, the replacement procedure of
-Section~\ref{replacement-procedure} is performed using a geometric rate
-of decay of $p = \tfrac{5}{6}$, and truncating the distribution at
-$n=8$.  For every replacement token (e.g. \word{CAT\_i}), occurrences of
-this token are subsequently interspersed uniformly at random throughout
-the corpus, such that the frequency of the replacement token is restored
-to that of the original word \word{cat}.  For example, if the original
-word \word{cat} occurred $1000$ times, then after the replacement
-procedure, \word{CAT\_2} occurs approximately $694$ times, so a further
-(approximately) $306$ random occurrences of \word{CAT\_2} are
-interspersed throughout the corpus.  Thus the word \word{cat} is removed
-from the corpus, and a family of tokens \word{CAT\_i}, $1 \leqslant i
-\leqslant 8$ is introduced.  These tokens all have the same frequency as
-the word \word{cat}, but their co-occurrence distributions, while based
-on that of \word{cat}, have an increasing amount of noise.
+Section~\ref{replacement-procedure} is performed using the
+distribution~(\ref{distro2}) with $n=7$.  For every replacement token
+(e.g. \word{CAT\_i}), additional occurrences of this token are
+interspersed uniformly at random throughout the corpus, such that the
+final frequency of the replacement token is $2/n$ times that of the
+original word \word{cat}.  For example, if the original word \word{cat}
+occurred $1000$ times, then after the replacement procedure,
+\word{CAT\_2} occurs approximately $238$ times, so a further
+(approximately) $2/7 \times 1000 - 238 \approx 48$ random occurrences of
+\word{CAT\_2} are interspersed throughout the corpus.  In this way, the
+word \word{cat} is removed from the corpus and replaced with a family of
+tokens \word{CAT\_i}, $1 \leqslant i \leqslant 7$.  These tokens all
+have the same frequency, but their co-occurrence distributions, while
+based on that of \word{cat}, have an increasing amount of noise.
+Specifically, the proportion of noise for the $i$th token is
+%
+$$ 1 - \frac{n}{2} P_n(i) = \frac{i-1}{n-1} , \;\; \textrm{ or } \;\; 0,
+\frac{1}{n-1}, \frac{2}{n-1}, \ldots, 1 \;\; \textrm{ for } \;\; i =
+1,2, \ldots, n , 
+$$ 
+%
+which is evenly distributed.  The first token contains no noise at all,
+while the last token stands for pure noise.  The particular choice of
+$n$ assures a reasonable coverage of the interval $[0,1]$.  Other
+parameter values (or indeed other distributions) could, of course, have
+been used equally well.
 
 Figure~\ref{fig:co-occurrence-noise-experiment-text} illustrates the
 effect of this modification in the case where the only word chosen is
@@ -524,21 +562,11 @@ appear also in the dogs section. These occurrences (and additionally,
 with probability, some occurrences from the cats section) constitute
 noise.
 
-The proportion of occurrences of the token \word{CAT\_i} that arise by
-replacing the word \word{cat} is $P_{5/6, 8}(i)$, and the proportion
-that arise from randomly interspersing this token throughout the corpus
-is $r_i := 1 - P_{5/6, 8}(i)$.  The particular value of $p$ (large
-compared to that of Section~\ref{WFVE}) was chosen so that the
-proportion of noise $r_i$ did not increase too quickly with $i$.  These
-proportions are the sampling points on our axis of variation, and this
-value of $p$ (together with the choice of $n$) assures a reasonable
-spread.  Other parameter values (or indeed other distributions) could,
-of course, have been used equally well.
-
 \begin{table}
 	\input{noise-cooccurrence-experiment-counts.tex}
 	\label{fig:co-occurrence-noise-counts}
-	\caption{Words chosen for the co-occurrence noise experiment, along with the occurrence counts in the unmodified corpus. }
+	\caption{Words chosen for the co-occurrence noise experiment,
+          along with the word frequencies in the unmodified corpus. }
 	\label{cooccurrence-noise-words}
 \end{table}
 
@@ -549,40 +577,55 @@ of course, have been used equally well.
 	\caption{Example sentences modified for the co-occurrence noise
           experiment, where the word \word{cat} was chosen for
           replacement.  The tokens were generated using the distribution
-          (\ref{distro}) with $p = \tfrac{5}{6}$ and $n=3$.}
+          (\ref{distro2}) with $n=7$.}
 	\label{fig:co-occurrence-noise-experiment-text}
 \end{figure}
 
 \begin{subsection}{Experimental results}
+%
 Figure~\ref{fig:co-occurrence-noise-heatmap} shows the cosine similarity
 of pairs of vectors representing some of the tokens used in this
-experiment.  The figure clearly demonstrates that vectors representing
-tokens derived from the same word all share a common direction.  Thus
-co-occurrence noise has no discernible effect on the direction of word
-vectors.
+experiment.  Remember that the first token ($i=1$) in a family is
+without noise in its co-occurrence distribution, while the last one
+($i=n$, with $n=7$) stands for pure noise and has therefore no relation
+anymore with the word it derives from.  The figure demonstrates that the
+vectors within a family only moderately deviate from the original
+direction defined by the first token ($i=1$) when noise is added to the
+co-occurrence distribution.  For $1<i<7$, the deviation typically
+increases with the proportion of noise.  The vector of the last token
+($i=n$), associated with pure noise, is seen within each of the families
+to point in a completely different direction, more or less perpendicular
+to the original one.  To understand this interpolating behavior, recall
+from Section~\ref{WFVE-results} that the vector for the entirely
+meaningless word \word{VOID} is small but non-zero.  Since the noise
+distribution coincides with the co-occurrence distribution of
+\word{VOID}, the vectors for the experiment words must tend to the word
+vector for \word{VOID} as the proportion of noise in their co-occurrence
+distributions approaches $1$.
+This convergence to a common point is only indistinctly apparent in
+Figure~\ref{fig:co-occurrence-noise-heatmap} as the frequency of the experiment
+tokens is insufficient to sample the full variety of the contexts of VOID, i.e.
+all contexts (see Section \ref{WFVE-direction}).
 
 The left panel in Figure~\ref{fig:co-occurrence-noise-graph} reveals
-that word vector length varies more or less linearly with the proportion
-of noise in the co-occurrence distribution of the word.  This figure motivates an
-interpretation of vector length, within a sufficiently narrow frequency
-band, as a measure of the absence of co-occurrence noise, or put
-differently, of the extent to which a word carries the meaning of a
-distinctive context.
-The right panel of Figure~\ref{fig:co-occurrence-noise-graph} shows that the
-syn1neg vector length does not vary with the proportion of co-occurrence noise.
+that vector length varies more or less linearly with the proportion of
+noise in the co-occurrence distribution of the word.  This figure
+motivates an interpretation of vector length, within a sufficiently
+narrow frequency band, as a measure of the absence of co-occurrence
+noise, or put differently, of the extent to which a word carries the
+meaning of a distinctive context.
 
-Recall from Section~\ref{WFVE-results} that the word vector for \word{VOID} is independent of the frequency of \word{VOID}, and is non-zero.
-Since the noise distribution coincides with the co-occurrence distribution of \word{VOID}, the word vectors for the experiment words must tend to the word vector for \word{VOID} as the proportion of noise in their co-occurrence distributions approaches $1$.
-This is not discernible in Figure~\ref{fig:co-occurrence-noise-heatmap} since the word vector for \word{VOID} is relatively close to the origin.
 
 \begin{figure}
 	\includegraphics[scale=0.5]{cooccurrence-noise-heatmap}
 	\caption{ Heatmap of the cosine similarity of the vectors
           representing some of the tokens used in the co-occurrence
           noise experiment (the words were chosen at random).  The
-          largely red blocks demonstrate that the direction of the word
-          vectors does not change when noise is added to the
-          co-occurrence distribution.  }
+          largely red blocks demonstrate that for $i<7$ the direction of
+          the vectors only moderately changes when noise is added to the
+          co-occurrence distribution.  The vector of the tokens
+          associated with pure noise ($i=7$) is seen to be almost
+          perpendicular to the word vectors they derive from. }
 	\label{fig:co-occurrence-noise-heatmap}
 \end{figure}
 
