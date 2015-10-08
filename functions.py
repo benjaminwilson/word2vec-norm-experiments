@@ -18,24 +18,26 @@ def count_words(f):
                 counts[word] += 1
     return counts
 
-def read_words(f):
+def read_words(filename):
     """
     given a CSV of word counts, returns the list of words.
     """
     words = []
-    for line in f:
-        word = line.split(',')[0]
-        words.append(word)
+    with file(filename) as f:
+        for line in f:
+            word = line.split(',')[0]
+            words.append(word)
     return words
 
-def read_word_counts(f):
+def read_word_counts(filename):
     """
     given a CSV of word counts, returns a word count dictionary.
     """
     counts = dict()
-    for line in f:
-        word, count = line.strip().split(',')
-        counts[word] = int(count)
+    with file(filename) as f:
+        for line in f:
+            word, count = line.strip().split(',')
+            counts[word] = int(count)
     return counts
 
 def build_experiment_token(word, sample):
