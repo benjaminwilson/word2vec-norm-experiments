@@ -1,6 +1,7 @@
 from __future__ import print_function
 import random
 import numpy as np
+from scipy.spatial.distance import cdist
 import pandas as pd
 import matplotlib.pyplot as plt
 from collections import defaultdict
@@ -174,3 +175,16 @@ def cosine_similarity_heatmap(test_vecs, ticks, **kwargs):
     _ = plt.yticks(np.arange(0.5, len(test_vecs.index), 1), ticks, fontsize=11)
     _ = plt.xticks(np.arange(0.5, len(test_vecs.index), 1), ticks, rotation=90, fontsize=11)
     plt.tight_layout()
+
+def by_distance_from(table, v, **params):
+    """
+    Return a Series, listing the distance of each row
+    from the vector given.
+    To specify different metrics, see docstring of scipy.spatial.distance.cdist
+    (default if Euclidean).
+    """
+    v = np.array(v).reshape(1, -1)
+    dist = pd.Series(
+        cdist(v, table, **params)[0], index=table.index, copy=True)
+    dist.sort()
+    return dist

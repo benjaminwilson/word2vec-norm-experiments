@@ -9,7 +9,13 @@ from functions import *
 vectors_syn0_filename = sys.argv[1]
 word = sys.argv[2] # e.g. 'the'
 
-vectors, norms = row_normalise_dataframe(load_word2vec_binary(vectors_syn0_filename))
+def row_normalise_dataframe(df):
+    matrix = df.as_matrix() * 1.
+    norms = np.sqrt((matrix ** 2).sum(axis=1))
+    normed_mat = matrix / norms[:, np.newaxis]
+    return pd.DataFrame(normed_mat, index=df.index, columns=df.columns)
+
+vectors = row_normalise_dataframe(load_word2vec_binary(vectors_syn0_filename))
 
 # e.g. 'THE_1' ...
 tokens = [build_experiment_token(word, i) for i in range(1, max(word_freq_experiment_ratio, word_freq_experiment_power_max) + 1)]

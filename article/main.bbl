@@ -26,12 +26,6 @@ Thomas~K Landauer and Susan~T. Dutnais.
   of acquisition, induction, and representation of knowledge.
 \newblock {\em PSYCHOLOGICAL REVIEW}, 104(2):211--240, 1997.
 
-\bibitem{mcdonald2001contextual}
-Scott McDonald and Richard Shillcock.
-\newblock Contextual distinctiveness: a new lexical property computed from
-  large corpora.
-\newblock {\em Behavior Research Methods, Instruments and Computers}, 2001.
-
 \bibitem{EfficientEstimation}
 Tomas Mikolov, Kai Chen, Greg Corrado, and Jeffrey Dean.
 \newblock Efficient estimation of word representations in vector space.
@@ -53,6 +47,13 @@ Jeffrey Pennington, Richard Socher, and Christopher~D Manning.
 Adriaan M.~J. Schakel and Benjamin~J. Wilson.
 \newblock Measuring word significance using distributed representations of
   words, 2015.
+
+\bibitem{schnabelemnlp2015}
+Tobias Schnabel, Igor Labutov, David Mimno, and Thorsten Joachims.
+\newblock Evaluation methods for unsupervised word embeddings.
+\newblock In {\em Proceedings of the 2015 Conference on Empirical Methods in
+  Natural Language Processing}, pages 298--307, Lisbon, Portugal, September
+  2015. Association for Computational Linguistics.
 
 \bibitem{vecchi-baroni-zamparelli2011}
 Eva~M. Vecchi, Marco Baroni, and Roberto Zamparelli.
