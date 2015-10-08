@@ -28,10 +28,10 @@ $(word_counts_unmodified_corpus): $(corpus_unmodified)
 $(word_counts_modified_corpus): $(corpus_modified)
 	python count_words.py > $(word_counts_modified_corpus) < $(corpus_modified)
 $(word_freq_experiment_words): $(word_counts_unmodified_corpus)
-	python choose_experiment_words.py randomseed1 > $(word_freq_experiment_words) < $(word_counts_unmodified_corpus)
+	python choose_experiment_words.py randomseed1 $(word_counts_unmodified_corpus) > $(word_freq_experiment_words)
 	cat $(word_counts_unmodified_corpus) | grep ^the, >> $(word_freq_experiment_words)
 $(coocc_noise_experiment_words): $(word_counts_unmodified_corpus)
-	python choose_experiment_words.py randomseed2 > $(coocc_noise_experiment_words) < $(word_counts_unmodified_corpus)
+	python choose_experiment_words.py randomseed2 $(word_counts_unmodified_corpus) > $(coocc_noise_experiment_words)
 $(corpus_modified): $(corpus_unmodified) $(word_counts_unmodified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
 	cat $(corpus_unmodified) \
 		| python modify_corpus_word_freq_experiment.py $(word_freq_experiment_words) $(word_counts_unmodified_corpus) \

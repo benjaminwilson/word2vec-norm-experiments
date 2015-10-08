@@ -34,9 +34,7 @@ vectors_syn1neg = load_word2vec_binary(vectors_syn1neg_filename)
 norms_syn1neg = calculate_norms(vectors_syn1neg)
 
 vocab = list(vectors_syn0.index)
-
-with file(word_counts_filename) as f:
-    counts_modified_corpus = read_word_counts(f)
+counts_modified_corpus = read_word_counts(word_counts_filename)
 
 stats = pd.DataFrame({'occurrences': counts_modified_corpus,
                       'L2_norm_syn0': norms_syn0,

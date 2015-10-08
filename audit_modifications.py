@@ -4,11 +4,8 @@ A simple script for outputing the frequencies of the experiment tokens.
 from parameters import *
 from functions import *
 
-with file('outputs/word_counts_unmodified_corpus.csv') as f:
-    wc_unmodified = read_word_counts(f)
-            
-with file('outputs/word_counts_modified_corpus.csv') as f:
-    wc_modified = read_word_counts(f)
+wc_unmodified = read_word_counts('outputs/word_counts_unmodified_corpus.csv')
+wc_modified = read_word_counts('outputs/word_counts_modified_corpus.csv')
 
 wfve_words = read_words('outputs/word_freq_experiment_words')
 cnve_words = read_words('outputs/coocc_noise_experiment_words')
