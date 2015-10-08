@@ -98,13 +98,13 @@ how to unravel these dependencies in an unambiguous, objective manner.
 In particular, it is difficult to establish the distinctiveness of the
 contexts in which a word is used.  To overcome these problems, we
 propose to modify the training corpus in a controlled fashion.  To
-this end, we insert new tokens into the corpus with varying frequencies
+this end, we insert new pseudowords into the corpus with varying frequencies
 and varying levels of noise in their co-occurrence distributions.  By
-modeling the frequency and co-occurrence distributions of these tokens
+modeling the frequency and co-occurrence distributions of these pseudowords
 on existing words in the corpus, we are able to study their effect on
 word vectors independently of one another.  We can thus study a family
-of tokens that all appear in the same context, but with different
-frequencies, or study a family of tokens that all have the same
+of pseudowords that all appear in the same context, but with different
+frequencies, or study a family of pseudowords that all have the same
 frequency, but appear in a different number of contexts.  Starting from
 the limited number of contexts in which a word appears in the original
 corpus, we can increase this number by interspersing the word in arbitrary
@@ -129,7 +129,7 @@ co-occurrence distribution of a word, the corresponding vector smoothly
 interpolates between the original word vector and a small vector
 perpendicular to it that represents a word with pure noise in its
 co-occurrence distribution.  Surprisingly, this special vector in the feature
-space, obtained by interspersing a token uniformly at random throughout
+space, obtained by interspersing a pseudoword uniformly at random throughout
 the corpus with a frequency sufficiently large to sample all contexts, is
 non-zero.
 
@@ -146,104 +146,88 @@ and possible future directions.
 \end{section}
 
 \begin{section}{Related work}\label{related-work}
-\mar{move to other paper?}
-Our notion of word significance is reminiscent of the concept of
-``contextual distinctiveness'' introduced earlier by McDonald and
-Shillcock \cite{mcdonald2001contextual}.  They define the contextual
-distinctiveness of a target word $w$ as the Kullback-Leibler divergence
-between the unconditional word distribution $\p(w')$, and the
-co-occurrence distribution $\p(w' | w)$ of the target word $w$.  So
-defined, contextual distinctiveness is a measure of the amount of
-information provided by word $w$ about its contexts of use.  More
-specifically, if a word $w$ tends to appear in a wide variety of
-contexts, then its co-occurrence distribution tends to diverge less from
-unconditional word distribution, and its contextual distinctiveness is
-accordingly small.  If, on the other hand, $w$ typically appears in only
-a small number of different contexts, its co-occurrence distribution
-tends to diverge more from the unconditional word distribution, and a
-larger value of contextual distinctiveness results.  To reduce the
-computational burden, the authors considered only $690$ target words,
-randomly chosen from equally divided frequency bands.  Furthermore, the
-authors considered only co-occurrence with the $500$ most frequent
-content words.  This significant restriction, necessary in their case in
-order to reduce the variance of the estimates of their measure of
-contextual distinctiveness, does not apply in our study. 
+In recent work on the evaluation of word embeddings, Schnabel, Labutov, Mimno
+and Joachims \cite{schnabelemnlp2015} trained logistic regression models to
+predict whether a word was rare or frequent given only the direction of its
+word vector.  The prediction accuracy was then measured as a function of word
+embedding method and of the threshold for word rarity.  It was found in the
+case of word2vec CBOW that word vector direction could be used to distinguish
+very rare words from all other words. The authors claimed further that word
+vector direction must encode frequency directly, and not indirectly via
+semantic information.  Our experimental finding that word vector direction is
+independent of word frequency contradicts this claim in the case of word2vec
+CBOW.
 
-Our experimental finding that word vector length decreases with
-co-occurrence noise is related to earlier work by Vecchi, Baroni, and
-Zamparelli \cite{vecchi-baroni-zamparelli2011}, where a relation between
-vector length and the ``semantic deviance'' of an adjective-noun
-composite was studied empirically.  In that paper, which is also based
-on word co-occurrence statistics, the authors study adjective-noun
-composites.  They built a vocabulary from the 8k most frequent nouns and
-4k most frequent adjectives in a large general language corpus and added
-22k adjective-noun composites.  For each item in the vocabulary, they
-recorded the co-occurrences with the top 10k most frequent content words
-(nouns, adjectives or verbs), and constructed word embeddings via
-singular value decomposition of the co-occurrence matrix
+Our experimental finding that word vector length decreases with co-occurrence
+noise is related to earlier work by Vecchi, Baroni, and Zamparelli
+\cite{vecchi-baroni-zamparelli2011}, where a relation between vector length and
+the ``semantic deviance'' of an adjective-noun composite was studied
+empirically.  In that paper, which is also based on word co-occurrence
+statistics, the authors study adjective-noun composites.  They built a
+vocabulary from the 8k most frequent nouns and 4k most frequent adjectives in a
+large general language corpus and added 22k adjective-noun composites.  For
+each item in the vocabulary, they recorded the co-occurrences with the top 10k
+most frequent content words (nouns, adjectives or verbs), and constructed word
+embeddings via singular value decomposition of the co-occurrence matrix
 \cite{landauer-dumais1997}.  The authors considered several models for
-constructing vectors of unattested adjective-noun composites, the two
-simplest being adding and component-wise multiplying the adjective and
-noun vectors.  They hypothesized that the length of the vectors thus
-constructed can be used to distinguish acceptable and semantically
-deviant adjective-noun composites.  Using a few hundred adjective-noun
-composites selected by humans for evaluation, they found that deviant
-composites have a shorter vector than acceptable ones, in accordance
-with their expectation.  In contrast to their work, our approach does
-not require human annotation.
+constructing vectors of unattested adjective-noun composites, the two simplest
+being adding and component-wise multiplying the adjective and noun vectors.
+They hypothesized that the length of the vectors thus constructed can be used
+to distinguish acceptable and semantically deviant adjective-noun composites.
+Using a few hundred adjective-noun composites selected by humans for
+evaluation, they found that deviant composites have a shorter vector than
+acceptable ones, in accordance with their expectation.  In contrast to their
+work, our approach does not require human annotation.
 
 Recent theoretical work \cite{Arora2015} has approached the problem of
-explaining the so-called ``compositionality'' property exhibited by some
-word embeddings.  In that work, unnormalised vectors are used in their
-model of the word relation task.  It is hoped that experimental
-approaches such as those described here might enable theoretical
-investigations to describe the role of the word vector length in the
-word relation tasks.
-\end{section}
+explaining the so-called ``compositionality'' property exhibited by some word
+embeddings.  In that work, unnormalised vectors are used in their model of the
+word relation task.  It is hoped that experimental approaches such as those
+described here might enable theoretical investigations to describe the role of
+the word vector length in the word relation tasks.  \end{section}
 
-\begin{section}{Corpus and model}\label{corpus-and-model}
-Our training data is built from the Wikipedia data dump from October
-2013.  To remove the bulk of robot-generated pages from the training
-data, only pages with at least 20 monthly page views are
-retained.\footnote{For further justification and to obtain the dataset,
-  see\\ \blogpost} Stubs and disambiguation pages are also removed,
-leaving 463 thousand pages with a total of 482 million words.
-Punctuation marks and numbers were removed from the pages and all words
-were lower-cased.  Word frequencies are summarised in
-Table~\ref{word-occurrences-table}.  This base corpus is then modified
-as described in Sections~\ref{WFVE} and \ref{CNVE}.  For
-recognisability, the tokens inserted into the corpus are upper-cased.
+\begin{section}{Corpus and model}\label{corpus-and-model} Our training data is
+	built from the Wikipedia data dump from October 2013.  To remove the
+	bulk of robot-generated pages from the training data, only pages with
+	at least 20 monthly page views are retained.\footnote{For further
+	justification and to obtain the dataset, see\\ \blogpost} Stubs and
+	disambiguation pages are also removed, leaving 463 thousand pages with
+	a total of 482 million words.  Punctuation marks and numbers were
+	removed from the pages and all words were lower-cased.  Word
+	frequencies are summarised in Table~\ref{word-occurrences-table}.  This
+	base corpus is then modified as described in Sections~\ref{WFVE} and
+	\ref{CNVE}.  For recognisability, the pseudowords inserted into the
+	corpus are upper-cased.
 
-\begin{subsection}{Word2vec}\label{word2vec}
-Word2vec, a feed-forward neural network with a single hidden layer,
-learns word vectors from word co-occurrences in an unsupervised manner.
-Word2vec comes in two versions.  In the continuous bag-of-words (CBOW)
-model, the words appearing around a target word serve as input.  That
-input is projected linearly onto the hidden layer and the network then
-attempts to predict the target word on output.  Training is achieved
-through back-propagation.  The word vectors are encoded in the weights
-of the first synaptic layer, ``syn0''.  The weights of the second
-synaptic layer (``syn1neg'', in the case of negative sampling) are
-typically discarded.  In the other model, called skip-gram, target and
-context words swap places, so that the target word now serves as input,
-while the network attempts to predict the context words on output.
+\begin{subsection}{Word2vec}\label{word2vec} Word2vec, a feed-forward neural
+	network with a single hidden layer, learns word vectors from word
+	co-occurrences in an unsupervised manner.  Word2vec comes in two
+	versions.  In the continuous bag-of-words (CBOW) model, the words
+	appearing around a target word serve as input.  That input is projected
+	linearly onto the hidden layer and the network then attempts to predict
+	the target word on output.  Training is achieved through
+	back-propagation.  The word vectors are encoded in the weights of the
+	first synaptic layer, ``syn0''.  The weights of the second synaptic
+	layer (``syn1neg'', in the case of negative sampling) are typically
+	discarded.  In the other model, called skip-gram, target and context
+	words swap places, so that the target word now serves as input, while
+	the network attempts to predict the context words on output.
 
-For simplicity only the word2vec CBOW word embedding with a single set
-of hyperparameters is considered.  Specifically, a CBOW model with a
-hidden layer of size 100 is trained using negative sampling with 5
-negative samples, a window size of $10$, a minimum frequency of
-$128$, and $10$ passes through the corpus.  Sub-sampling was not used so
-that the influence of word frequency could be more clearly discerned.
-Similar experimental results were obtained using hierarchical softmax,
-but these are omitted for succinctness.  The relatively high
-low-frequency cut-off is chosen to ensure that word vectors, in all but
-degenerate cases, receive a sufficient number of gradient updates to be
-meaningful.  This frequency cut-off results in a vocabulary of $81117$
-words (only unigrams were considered).
+For simplicity only the word2vec CBOW word embedding with a single set of
+hyperparameters is considered.  Specifically, a CBOW model with a hidden layer
+of size 100 is trained using negative sampling with 5 negative samples, a
+window size of $10$, a minimum frequency of $128$, and $10$ passes through the
+corpus.  Sub-sampling was not used so that the influence of word frequency
+could be more clearly discerned.  Similar experimental results were obtained
+using hierarchical softmax, but these are omitted for succinctness.  The
+relatively high low-frequency cut-off is chosen to ensure that word vectors, in
+all but degenerate cases, receive a sufficient number of gradient updates to be
+meaningful.  This frequency cut-off results in a vocabulary of $81117$ words
+(only unigrams were considered).
 
-The most recent revision of word2vec was used.\footnote{SVN revision 42,
-  see \url{http://word2vec.googlecode.com/svn/trunk/}} The source code
-for performing the experiments is made available on
+The most recent revision of word2vec was used.\footnote{SVN revision 42, see
+\url{http://word2vec.googlecode.com/svn/trunk/}} The source code for performing
+the experiments is made available on
 GitHub.\footnote{\url{https://github.com/benjaminwilson/word2vec-norm-experiments}}
 
 \begin{table}
@@ -256,18 +240,18 @@ GitHub.\footnote{\url{https://github.com/benjaminwilson/word2vec-norm-experiment
 
 \begin{subsection}{Replacement procedure}\label{replacement-procedure}
 In the experiments detailed below, we modify the corpus in a controlled
-manner by introducing tokens into the corpus via a replacement
+manner by introducing pseudowords into the corpus via a replacement
 procedure.  For the frequency experiment, the procedure is as follows.
 Consider a word, say \word{cat}.  For each occurrence of this word, a
 sample $i$, $1 \leqslant i \leqslant n$ is drawn from a truncated
 geometric distribution, and that occurrence of the word \word{cat} is
-replaced with the token \word{CAT\_i}.  In this way, the word \word{cat}
-is replaced throughout the corpus by a family of tokens with varying
+replaced with the pseudoword \word{CAT\_i}.  In this way, the word \word{cat}
+is replaced throughout the corpus by a family of pseudowords with varying
 frequencies but approximately the same co-occurrence distribution as
-\word{cat}.  That is, all these tokens are used in roughly the same
+\word{cat}.  That is, all these pseudowords are used in roughly the same
 contexts as the original word.
 
-The geometric distribution is truncated to limit the number of tokens
+The geometric distribution is truncated to limit the number of pseudowords
 inserted into the corpus.  For any choice $0 < p < 1$ and maximum value
 $n > 0$, the truncated geometric distribution is given by the
 probability density function
@@ -297,34 +281,34 @@ $[0,1]$.
 \begin{section}{Varying word frequency}\label{WFVE}
 In this first experiment, we investigate the effect of word frequency on
 the word embedding.  Using the replacement procedure, we introduce a
-small number of families of tokens into the corpus.  The tokens in each
+small number of families of pseudowords into the corpus.  The pseudowords in each
 family vary in frequency but, replacing a single word, all share a
 common co-occurrence distribution.  This allows us to study the role of
 word frequency in isolation, everything else being kept equal.  We
-consider two types of tokens.
+consider two types of pseudowords.
 
-\begin{subsection}{Tokens derived from existing words}\label{WFVEexisting}
+\begin{subsection}{Pseudowords derived from existing words}\label{WFVEexisting}
 We choose uniformly at random a small number of words from the
 unmodified vocabulary for our experiment.  In order that the inserted
-tokens do not have too low a frequency, only words which occur at least
+pseudowords do not have too low a frequency, only words which occur at least
 10 thousand times are chosen.  We also include the high-frequency
 stopword \word{the} for comparison.  Table~\ref{word-frequency-counts}
 lists the words chosen for this experiment along with their frequencies.
 
 The replacement procedure of Section~\ref{replacement-procedure} is then
 performed for each of these words, using a geometric decay rate of $p =
-\tfrac{1}{2}$, and maximum value $n=20$, so that the 1st token is
+\tfrac{1}{2}$, and maximum value $n=20$, so that the 1st pseudoword is
 inserted with a probability of about $0.5$, the 2nd with a probability of
 about $0.25$, and so on.  This value of $p$ is one of a range of values
-that ensure that, for each word, multiple tokens will be inserted with a
+that ensure that, for each word, multiple pseudowords will be inserted with a
 frequency sufficient to survive the low-frequency cut-off of
 128.  A maximum value $n=20$ suffices for this choice of $p$, since
-$2^{20 + \log_2{128}}$ exceeds the maximum frequency of any token in
+$2^{20 + \log_2{128}}$ exceeds the maximum frequency of any word in
 the corpus.  Figure~\ref{fig:word-frequency-experiment-text-cat}
 illustrates the effect of these modifications on a sample text, with a
-family of tokens \word{CAT\_i}, derived from the word \word{cat}.
+family of pseudowords \word{CAT\_i}, derived from the word \word{cat}.
 Notice that all occurrences of the word \word{cat} have been replaced
-with the tokens \word{CAT\_i}.
+with the pseudowords \word{CAT\_i}.
 
 \begin{table}
 	\input{word-frequency-experiment-counts.tex}
@@ -338,7 +322,7 @@ with the tokens \word{CAT\_i}.
 	\end{mdframed}
 	\caption{Example sentences modified in the word frequency
           experiment as per Section~\ref{WFVEexisting}, where the word
-          \word{cat} is replaced with tokens \word{CAT\_i} using the
+          \word{cat} is replaced with pseudowords \word{CAT\_i} using the
           truncated geometric distribution (\ref{distro}) with
           $p=\tfrac{1}{2}$ and $n=20$.}
 	\label{fig:word-frequency-experiment-text-cat}
@@ -348,7 +332,7 @@ with the tokens \word{CAT\_i}.
 
 \begin{subsection}{Tokens derived from an artificial, meaningless word}
 \label{WFVEmeaningless}
-Whereas the tokens introduced above all replace an existing word that
+Whereas the pseudowords introduced above all replace an existing word that
 carries a meaning, we now include for comparison a high-frequency,
 meaningless word.  We choose to introduce an artificial, entirely
 meaningless word \word{VOID} into the corpus, rather than choose an
@@ -360,10 +344,11 @@ distribution.  The replacement procedure is then performed for this
 word, using the same values for $p$ and $n$ as above.
 Figure~\ref{fig:word-frequency-experiment-text-void} shows the effect of
 these modifications on a sample text, where a higher relative frequency
-of $0.05$ is used instead for illustrative purposes.  Although the probability of inserting token
-\word{VOID\_1} is twice that of inserting token \word{VOID\_2} and four
-times that of inserting token \word{VOID\_3}, these three tokens all
-appear once in this small piece of text.
+of $0.05$ is used instead for illustrative purposes.
+%Although the probability of inserting the pseudoword
+%\word{VOID\_1} is twice that of inserting the pseudoword \word{VOID\_2} and four
+%times that of inserting the pseudoword \word{VOID\_3}, these three pseudowords all
+%appear once in this small piece of text.
 
 \begin{figure}
 	\begin{mdframed}
@@ -372,7 +357,7 @@ appear once in this small piece of text.
 	\caption{The same example sentences as in
           Figure~\ref{fig:word-frequency-experiment-text-cat} where
           instead of the word \word{cat} now the meaningless word
-          \word{VOID} is replaced with tokens \word{VOID\_i}.  For
+          \word{VOID} is replaced with pseudowords \word{VOID\_i}.  For
           illustrative purposes, the meaningless word \word{VOID} was
           here interspersed with a relative frequency of
           $0.05$. }
@@ -389,23 +374,23 @@ of word vectors separately.
 
 \subsubsection{Word frequency and vector direction}\label{WFVE-direction}
 Figure~\ref{word-frequency-experiment-heatmap} shows the cosine
-similarity of pairs of vectors representing some of the tokens used in
+similarity of pairs of vectors representing some of the pseudowords used in
 this experiment.  Recall that the cosine similarity measures the extent
 to which two vectors have the same direction, taking a maximum value of
-$1$ and a minimum value of $-1$.  The number of different tokens
+$1$ and a minimum value of $-1$.  The number of different pseudowords
 associated with an experiment word is the number of times that its
-frequency can be halved and remains above the low-frequency cut-off of
+frequency can be halved and remain above the low-frequency cut-off of
 $128$.
 
 Consider first the words other than \word{the} and \word{VOID}.  These
 words typically occur in a limited number of distinct contexts, and so a
 limited number of samples is required to capture their co-occurrence
 distributions.  We therefore expect that the vectors representing the
-tokens derived from any of these words can be properly learned from the
+pseudowords derived from any of these words can be properly learned from the
 modified corpus, even though their combined frequency equals the
 frequency of that word in the original corpus.  The red blocks in
 Figure~\ref{word-frequency-experiment-heatmap} clearly demonstrate that
-the direction of these vectors is constant for each family of tokens.
+the direction of these vectors is constant for each family of pseudowords.
 In other words, the direction of these vectors is only determined by the
 original word and is independent of how often that word appears,
 provided sufficient samples have been processed for the word vector to
@@ -417,19 +402,19 @@ therefore required to capture its co-occurrence distribution, and
 thereby to learn its word vector.  The same is true, but to a lesser
 extent, for the stopword \word{the}.  The difficulty of learning the
 vector representing \word{VOID\_i} or \word{THE\_i} increases with $i$,
-for the tokens occur increasingly less often.  This is consistent with
+for the pseudowords occur increasingly less often.  This is consistent with
 Figure~\ref{word-frequency-experiment-heatmap}, where it is apparent
 that the vectors representing \word{VOID\_i} for small $i$, say $i = 1,
 \dots, 5$, roughly share a common direction, while this is no longer
 true for higher values of $i$.  The same trend is apparent, although
-less extremely so, for the word \word{the}.  The vectors for the tokens
+less extremely so, for the word \word{the}.  The vectors for the pseudowords
 \word{THE\_i} share a common direction for values of $i$ as high as
 $14$, before they start changing direction.  We conclude that these
 deviations are artifacts of poor learning due to an insufficient number
-of occurrences of these tokens.
+of occurrences of these pseudowords.
 Table~\ref{word-frequency-experiment-cosine-similarity}, showing the
-most similar words to each token \word{THE\_i}, supports this further.
-In the discussions below, the tokens \word{VOID\_i} and \word{THE\_i}
+most similar words to each pseudoword \word{THE\_i}, supports this further.
+In the discussions below, the pseudowords \word{VOID\_i} and \word{THE\_i}
 whose vectors have a cosine similarity less than $0.8$ with
 \word{VOID\_1} and \word{THE\_1}, respectively, are therefore discarded.
 
@@ -446,14 +431,14 @@ of the first synaptic layer, syn0, in the word2vec neural network, and
 for the vectors represented by the weights of the second synaptic layer,
 syn1neg.  We include the latter, which are typically ignored, for
 completeness.  Each line corresponds to a single word, and the points on
-each line indicate the frequency and vector length of the tokens derived
+each line indicate the frequency and vector length of the pseudowords derived
 from that word.  For example, the six points on the line corresponding
 to the word \word{protestant} are labeled, from right to left, by the
-tokens \word{PROTESTANT\_1}, \word{PROTESTANT\_2}, \dots,
+pseudowords \word{PROTESTANT\_1}, \word{PROTESTANT\_2}, \dots,
 \word{PROTESTANT\_6}.  Again, the number of points on the line is
 determined by the frequency of the original word.  For example, the
 frequency of the word \word{protestant} can be halved at most $6$ times
-so that the frequency of the last token is still above the low-frequency
+so that the frequency of the last pseudoword is still above the low-frequency
 cut-off.  Because all the points on a line share the same co-occurrence
 distribution, the left panel in
 Figure~\ref{fig:word-frequency-experiment-graph} demonstrates
@@ -466,16 +451,16 @@ independent of the frequency band, i.e., the plotted lines rarely cross.
 Notice the inflection of the syn1neg curve in
 Figure~\ref{fig:word-frequency-experiment-graph} for \word{the} at
 approximately $10^6$.  We have no explanation of this.  Also observe
-that the lengths of the vectors representing the meaningless tokens
+that the lengths of the vectors representing the meaningless pseudowords
 \word{VOID\_i} are approximately constant (about $2.5$).  Since we
 already found the direction to be also constant, it is sensible to speak
 of the word vector of \word{VOID} irrespective of its frequency.  In
-particular, the token \word{VOID\_1} may be taken as an approximation.
+particular, the vector of the pseudoword \word{VOID\_1} may be taken as an approximation.
 
 \begin{figure}
 	\includegraphics[scale=0.5]{word-frequency-experiment-heatmap}
 	\caption{ Heatmap of the cosine similarity of the vectors
-          representing some of the tokens used in the word frequency
+          representing some of the pseudowords used in the word frequency
           experiment.  The words other than \word{the} and \word{VOID}
           were chosen randomly.  }
 	\label{word-frequency-experiment-heatmap}
@@ -484,17 +469,17 @@ particular, the token \word{VOID\_1} may be taken as an approximation.
 \begin{table}
 	\input{cosine-similarity.tex}
 	\caption{ Words in the original vocabulary most similar to the
-          tokens \word{THE\_i}, and their cosine similarity with the
-          most frequent such token, \word{THE\_1}.  It is apparent from
+          pseudowords \word{THE\_i}, and their cosine similarity with the
+          most frequent such pseudoword, \word{THE\_1}.  It is apparent from
           the nearest neighbour list that the vectors of the
-          low-frequency tokens have not been adequately trained.  }
+          low-frequency pseudowords have not been adequately trained.  }
 	\label{word-frequency-experiment-cosine-similarity}
 \end{table}
 
 \begin{sidewaysfigure*}
 	\centering{\includegraphics[scale=0.6]{word-frequency-experiment-graph}}
-	\caption{ Vector length vs.\ frequency for tokens derived from a
-          few words chosen at random.  For each word, tokens of varying
+	\caption{ Vector length vs.\ frequency for pseudowords derived from a
+          few words chosen at random.  For each word, pseudowords of varying
           frequency but with the co-occurrence distribution of that word
           were inserted into the corpus, as described in
           Section~\ref{WFVE}.  The vectors are obtained from the first
@@ -527,28 +512,28 @@ their frequencies in the corpus.
 
 For each of these words, the replacement procedure of
 Section~\ref{replacement-procedure} is performed using the
-distribution~(\ref{distro2}) with $n=7$.  For every replacement token
-(e.g. \word{CAT\_i}), additional occurrences of this token are
+distribution~(\ref{distro2}) with $n=7$.  For every replacement pseudoword
+(e.g. \word{CAT\_i}), additional occurrences of this pseudoword are
 interspersed uniformly at random throughout the corpus, such that the
-final frequency of the replacement token is $2/n$ times that of the
+final frequency of the replacement pseudoword is $2/n$ times that of the
 original word \word{cat}.  For example, if the original word \word{cat}
 occurred $1000$ times, then after the replacement procedure,
 \word{CAT\_2} occurs approximately $238$ times, so a further
 (approximately) $2/7 \times 1000 - 238 \approx 48$ random occurrences of
 \word{CAT\_2} are interspersed throughout the corpus.  In this way, the
 word \word{cat} is removed from the corpus and replaced with a family of
-tokens \word{CAT\_i}, $1 \leqslant i \leqslant 7$.  These tokens all
+pseudowords \word{CAT\_i}, $1 \leqslant i \leqslant 7$.  These pseudowords all
 have the same frequency, but their co-occurrence distributions, while
 based on that of \word{cat}, have an increasing amount of noise.
-Specifically, the proportion of noise for the $i$th token is
+Specifically, the proportion of noise for the $i$th pseudoword is
 %
 $$ 1 - \frac{n}{2} P_n(i) = \frac{i-1}{n-1} , \;\; \textrm{ or } \;\; 0,
 \frac{1}{n-1}, \frac{2}{n-1}, \ldots, 1 \;\; \textrm{ for } \;\; i =
 1,2, \ldots, n , 
 $$ 
 %
-which is evenly distributed.  The first token contains no noise at all,
-while the last token stands for pure noise.  The particular choice of
+which is evenly distributed.  The first pseudoword contains no noise at all,
+while the last pseudoword stands for pure noise.  The particular choice of
 $n$ assures a reasonable coverage of the interval $[0,1]$.  Other
 parameter values (or indeed other distributions) could, of course, have
 been used equally well.
@@ -557,7 +542,7 @@ Figure~\ref{fig:co-occurrence-noise-experiment-text} illustrates the
 effect of this modification in the case where the only word chosen is
 \word{cat}.  The original text in this case concerned both cats and
 dogs.  Notice that the word \word{cat} has been replaced entirely in the
-cats section by \word{CAT\_i} and, moreover, that these same tokens
+cats section by \word{CAT\_i} and, moreover, that these same pseudowords
 appear also in the dogs section. These occurrences (and additionally,
 with probability, some occurrences from the cats section) constitute
 noise.
@@ -576,7 +561,7 @@ noise.
 	\end{mdframed}
 	\caption{Example sentences modified for the co-occurrence noise
           experiment, where the word \word{cat} was chosen for
-          replacement.  The tokens were generated using the distribution
+          replacement.  The pseudowords were generated using the distribution
           (\ref{distro2}) with $n=7$.}
 	\label{fig:co-occurrence-noise-experiment-text}
 \end{figure}
@@ -584,15 +569,15 @@ noise.
 \begin{subsection}{Experimental results}
 %
 Figure~\ref{fig:co-occurrence-noise-heatmap} shows the cosine similarity
-of pairs of vectors representing some of the tokens used in this
-experiment.  Remember that the first token ($i=1$) in a family is
+of pairs of vectors representing some of the pseudowords used in this
+experiment.  Remember that the first pseudoword ($i=1$) in a family is
 without noise in its co-occurrence distribution, while the last one
 ($i=n$, with $n=7$) stands for pure noise and has therefore no relation
 anymore with the word it derives from.  The figure demonstrates that the
 vectors within a family only moderately deviate from the original
-direction defined by the first token ($i=1$) when noise is added to the
+direction defined by the first pseudoword ($i=1$) when noise is added to the
 co-occurrence distribution.  For $1<i<7$, the deviation typically
-increases with the proportion of noise.  The vector of the last token
+increases with the proportion of noise.  The vector of the last pseudoword
 ($i=n$), associated with pure noise, is seen within each of the families
 to point in a completely different direction, more or less perpendicular
 to the original one.  To understand this interpolating behavior, recall
@@ -604,8 +589,8 @@ vector for \word{VOID} as the proportion of noise in their co-occurrence
 distributions approaches $1$.
 This convergence to a common point is only indistinctly apparent in
 Figure~\ref{fig:co-occurrence-noise-heatmap} as the frequency of the experiment
-tokens is insufficient to sample the full variety of the contexts of VOID, i.e.
-all contexts (see Section \ref{WFVE-direction}).
+pseudowords is insufficient to sample the full variety of the contexts of
+\word{VOID}, i.e.  all contexts (see Section \ref{WFVE-direction}).
 
 The left panel in Figure~\ref{fig:co-occurrence-noise-graph} reveals
 that vector length varies more or less linearly with the proportion of
@@ -619,11 +604,11 @@ meaning of a distinctive context.
 \begin{figure}
 	\includegraphics[scale=0.5]{cooccurrence-noise-heatmap}
 	\caption{ Heatmap of the cosine similarity of the vectors
-          representing some of the tokens used in the co-occurrence
+          representing some of the pseudowords used in the co-occurrence
           noise experiment (the words were chosen at random).  The
           largely red blocks demonstrate that for $i<7$ the direction of
           the vectors only moderately changes when noise is added to the
-          co-occurrence distribution.  The vector of the tokens
+          co-occurrence distribution.  The vector of the pseudowords
           associated with pure noise ($i=7$) is seen to be almost
           perpendicular to the word vectors they derive from. }
 	\label{fig:co-occurrence-noise-heatmap}
@@ -632,7 +617,7 @@ meaning of a distinctive context.
 \begin{sidewaysfigure*}
 	\includegraphics[scale=0.6]{cooccurrence-noise-graph}
 	\caption{ Vector length vs.\ proportion of occurrences from the noise distribution
-          for words chosen for this experiment.  For each word, tokens
+          for words chosen for this experiment.  For each word, pseudowords
           of equal frequency but with increasing proportion of
           co-occurrence noise were inserted into the corpus, as
           described in Section~\ref{CNVE}.  The word vectors are
@@ -659,7 +644,7 @@ word embeddings other than word2vec CBOW, such as skipgrams and GloVe,
 as well as for different hyperparameters settings.
 
 More elaborate experiments could be carried out.  For instance, by
-introducing tokens into the corpus that mix, with varying proportions,
+introducing pseudowords into the corpus that mix, with varying proportions,
 the co-occurrence distributions of two words, the path between the word
 vectors in the feature space could be studied.  The co-occurrence noise
 experiment described here would be a special case of such an
