@@ -44,7 +44,8 @@ $(vectors_binary_syn0) $(vectors_binary_syn1neg): word2vec $(corpus_modified)
 	./word2vec -min-count 128 -hs 0 -negative 5 -window 10 -size 100 -cbow 1 -debug 2 -threads 16 -iter 10 -binary 1 -output $(vectors_binary_syn0) -train $(corpus_modified)
 
 images:
-	python build_images.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words) $(coocc_noise_experiment_words)
+	python build_images_word_frequency.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(word_freq_experiment_words)
+	python build_images_coocc_noise.py $(vectors_binary_syn0) $(vectors_binary_syn1neg) $(word_counts_modified_corpus) $(coocc_noise_experiment_words)
 	touch images
 article/main.pdf:
 	python article_generate_word_counts.py $(word_counts_unmodified_corpus) > article/words-occurrences.tex

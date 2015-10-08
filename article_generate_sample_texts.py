@@ -18,7 +18,7 @@ def write_markup(raw_output, f_out):
     f_out.write(output)
     f_out.write(r"}")
 
-# PERFORM THE REPLACEMENT PROCEDURE FOR THE WORD FREQUENCY EXPERIMENT FOR THE WORD "CAT"
+# PERFORM THE REPLACEMENT PROCEDURE FOR THE WORD FREQUENCY VARIATION EXPERIMENT FOR THE WORD "CAT"
 
 word = 'cat'
 distn = lambda i: truncated_geometric_proba(word_freq_experiment_ratio, i, word_freq_experiment_power_max)
@@ -47,7 +47,7 @@ replace_words(word_samplers, tmp_file1, tmp_file2)
 with file('article/word-frequency-experiment-text-void.tex', 'w') as f_out:
     write_markup(tmp_file2.getvalue(), f_out)
 
-# COOCCURRENCE NOISE EXPERIMENT
+# PERFORM THE PROCEDURE FOR THE COOCCURRENCE NOISE VARIATION EXPERIMENT FOR THE WORD "CAT"
 word = 'cat'
 distn = lambda i: evenly_spaced_proba(i, coocc_noise_experiment_max_value)
 word_samplers = {word: distribution_to_sampling_function(word, distn, coocc_noise_experiment_max_value)}
@@ -63,9 +63,10 @@ tmp_file1.seek(0)
 
 # add noise to the cooccurrence distribution
 token_freq_dict = dict()
-target_freq = counts[word] * 1. * coocc_noise_experiment_freq_reduction / total_words
+original_freq = counts[word] * 1. / total_words
+target_freq = original_freq * coocc_noise_experiment_freq_reduction
 for i in range(1, coocc_noise_experiment_max_value + 1):
-    current_freq = counts[word] * evenly_spaced_proba(i, coocc_noise_experiment_max_value) / total_words
+    current_freq = original_freq * distn(i) 
     token_freq_dict[build_experiment_token(word, i)] = target_freq - current_freq
 tmp_file2 = StringIO()
 intersperse_words(token_freq_dict, tmp_file1, tmp_file2)
