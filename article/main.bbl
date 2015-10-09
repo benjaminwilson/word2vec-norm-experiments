@@ -20,6 +20,12 @@ Ronan Collobert, Jason Weston, L{\'e}on Bottou, Michael Karlen, Koray
 \newblock Natural language processing (almost) from scratch.
 \newblock {\em J. Mach. Learn. Res.}, 12:2493--2537, November 2011.
 
+\bibitem{gale1992work}
+William~A Gale, Kenneth~W Church, and David Yarowsky.
+\newblock Work on statistical methods for word sense disambiguation.
+\newblock In {\em Working Notes of the AAAI Fall Symposium on Probabilistic
+  Approaches to Natural Language}, volume~54, page~60, 1992.
+
 \bibitem{landauer-dumais1997}
 Thomas~K Landauer and Susan~T. Dutnais.
 \newblock A solution to plato’s problem: The latent semantic analysis theory
