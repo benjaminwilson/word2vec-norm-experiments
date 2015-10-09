@@ -25,7 +25,7 @@ non_experiment_idxs = [idx for idx in vectors.index if idx != idx.upper()] # all
 non_experiment_vectors = vectors.loc[non_experiment_idxs]
 
 print r'\begin{tabular}{l | c | l}'
-print r'token & similarity to \word{%s} & most similar words in unmodified corpus\\' % tokens[0].replace('_', '\_')
+print r'pseudoword & similarity to \word{%s} & most similar words in unmodified corpus\\' % tokens[0].replace('_', '\_')
 print '\hline'
 for token in tokens:
     cs = vectors.loc[token].dot(vectors.loc[tokens[0]])
