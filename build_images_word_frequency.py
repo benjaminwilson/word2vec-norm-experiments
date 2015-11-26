@@ -63,12 +63,16 @@ cosine_similarity_heatmap(example_vecs, ticks, figsize=(12, 10))
 plt.savefig('outputs/word-frequency-experiment-heatmap.eps')
 
 # for the experiment words, drop those word vectors that are not well trained
-# specifically, those whose cosine similarity with word_1 is < 0.8
+# specifically, drop word_i+1, word_i+2, .. if the cosine similarity of word_i and word_i+1 is less than 0.3
 for word in word_freq_experiment_words + [meaningless_token]:
     idxs = wf_experiment_tokens(word) # ordered: word_1, word_2 ..
     example_vecs = vectors_syn0.loc[idxs]
     cs = cosine_similarity(example_vecs)
-    poorly_trained = [idx for i, idx in enumerate(idxs) if cs[0,i] < 0.8]
+    poorly_trained = []
+    for i in range(1, len(example_vecs.index)):
+        if cs[i-1, i] < 0.3:
+            poorly_trained = idxs[i:]
+            break
     stats.drop(poorly_trained, axis=0, inplace=True)
     vectors_syn0.drop(poorly_trained, axis=0, inplace=True)
     vectors_syn1neg.drop(poorly_trained, axis=0, inplace=True)
