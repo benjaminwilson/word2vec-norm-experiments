@@ -49,12 +49,10 @@ images:
 	touch images
 article/words-occurrences.tex: $(word_counts_unmodified_corpus)
 	python article_generate_word_counts.py $(word_counts_unmodified_corpus) > article/words-occurrences.tex
-article/cosine-similarity.tex: $(vectors_binary_syn0)
-	python article_generate_cosine_similarity.py $(vectors_binary_syn0) the > article/cosine-similarity.tex
 article/word-frequency-experiment-counts.tex: $(word_freq_experiment_words)
 	python article_markup_wordcounts.py < $(word_freq_experiment_words) > article/word-frequency-experiment-counts.tex
 article/noise-cooccurrence-experiment-counts.tex: $(coocc_noise_experiment_words)
 	python article_markup_wordcounts.py < $(coocc_noise_experiment_words) > article/noise-cooccurrence-experiment-counts.tex
-article/main.pdf: article/words-occurrences.tex article/cosine-similarity.tex article/word-frequency-experiment-counts.tex article/noise-cooccurrence-experiment-counts.tex
+article/main.pdf: article/words-occurrences.tex article/word-frequency-experiment-counts.tex article/noise-cooccurrence-experiment-counts.tex
 	cd article && latex main.tex
 	cd article && latex main.tex && dvipdf main.dvi
