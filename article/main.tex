@@ -125,9 +125,9 @@ coefficient of linearity depends upon the word.  If the co-occurrence
 distribution is fixed, then word vector length increases with word
 frequency.  If, on the other hand, word frequency is held constant, then
 word vector length decreases as the level of noise in the co-occurrence
-distribution of the word is increased.  We show furthermore that the
-direction of the word vectors is independent of word frequency and only
-moderately depends upon co-occurrence noise.  When noise is added to the
+distribution of the word is increased.  In addition, we show that the direction
+of a word vector varies smoothly with word frequency and the level of
+co-occurrence noise.  When noise is added to the
 co-occurrence distribution of a word, the corresponding vector smoothly
 interpolates between the original word vector and a small vector
 perpendicular to it that represents a word with pure noise in its
@@ -149,18 +149,6 @@ and possible future directions.
 \end{section}
 
 \begin{section}{Related work}\label{related-work}
-In recent work on the evaluation of word embeddings, Schnabel et
-al.~\cite{schnabelemnlp2015} trained logistic regression models to
-predict whether a word was rare or frequent given only the direction of
-its word vector.  For various word embedding methods, the prediction
-accuracy was measured as a function of the threshold for word rarity.
-It was found in the case of word2vec CBOW that word vector direction
-could be used to distinguish very rare words from all other words. The
-authors claimed further that word vector direction must encode frequency
-directly, and not indirectly via semantic information.  Our experimental
-finding that word vector direction is independent of word frequency
-contradicts this claim in the case of word2vec CBOW.
-
 Our experimental finding that word vector length decreases with co-occurrence
 noise is related to earlier work by Vecchi, Baroni, and Zamparelli
 \cite{vecchi-baroni-zamparelli2011}, where a relation between vector length and
@@ -385,45 +373,50 @@ associated with an experiment word is the number of times that its
 frequency can be halved and remain above the low-frequency cut-off of
 $128$.
 
-Consider first the words other than \word{the} and \word{VOID}.  These
-words typically occur in a limited number of distinct contexts, and so a
-limited number of samples is required to capture their co-occurrence
-distributions.  We therefore expect that the vectors representing the
-pseudowords derived from any of these words can be properly learned from the
-modified corpus, even though their combined frequency equals the
-frequency of that word in the original corpus.  The red blocks in
-Figure~\ref{word-frequency-experiment-heatmap} clearly demonstrate that
-the direction of these vectors is constant for each family of pseudowords.
-In other words, the direction of these vectors is only determined by the
-original word and is independent of how often that word appears,
-provided sufficient samples have been processed for the word vector to
-settle in its equilibrium direction.
+Consider first the word vectors for the pseudowords associated to the word
+\word{the}.  Notice that the cosine similarity of the word vectors for
+\word{THE\_1} and \word{THE\_i} decreases monotonically with $i$, while the
+cosine similarity of the word vectors for \word{THE\_i} and \word{THE\_18}
+increases monotonically with $i$.  Indeed the direction of
+the word vector \word{THE\_i} changes systematically, interpolating between the
+directions of the word vectors of the highest-frequency pseudoword
+\word{THE\_1} and the lowest-frequency pseudoword \word{THE\_18}.  The same
+trend is apparent (though over shorter frequency ranges) for all the families of pseudowords
+other than that for \word{VOID}.
 
-The artificial word \word{VOID}, on the other hand, occurs by
-construction in every context.  A much higher number of samples is
-therefore required to capture its co-occurrence distribution, and
-thereby to learn its word vector.  The same is true, but to a lesser
-extent, for the stopword \word{the}.  The difficulty of learning the
-vector representing \word{VOID\_i} or \word{THE\_i} increases with $i$,
-for the pseudowords occur increasingly less often.  This is consistent with
-Figure~\ref{word-frequency-experiment-heatmap}, where it is apparent
-that the vectors representing \word{VOID\_i} for small $i$, say $i = 1,
-\dots, 5$, roughly share a common direction, while this is no longer
-true for higher values of $i$.  The same trend is apparent, although
-less extremely so, for the word \word{the}.  The vectors for the pseudowords
-\word{THE\_i} share a common direction for values of $i$ as high as
-$14$, before they start changing direction.  We conclude that these
-deviations are artifacts of poor learning due to an insufficient number
-of occurrences of these pseudowords.
-Table~\ref{word-frequency-experiment-cosine-similarity}, showing the
-most similar words to each pseudoword \word{THE\_i}, supports this further.
-In the discussions below, the pseudowords \word{VOID\_i} and \word{THE\_i}
-whose vectors have a cosine similarity less than $0.8$ with
-\word{VOID\_1} and \word{THE\_1}, respectively, are therefore discarded.
+Consider now the word vectors for pseudowords derived from the meaningless word
+\word{VOID}.  The word vectors for \word{VOID\_7}, \dots, \word{VOID\_13}
+are approximately orthogonal to one another, just as would be expected from
+randomly drawn vectors in a high dimensional space.
+As the pseudoword \word{VOID} occurs by
+construction in every context, a much higher number of samples is
+required to capture its co-occurrence distribution, and
+thereby to learn its word vector (the same is true, but to a lesser
+extent, for the stopword \word{the}).
+We conclude that the vectors corresponding to the lower frequency
+pseudowords \word{VOID\_7}, \dots, \word{VOID\_13} have not been trained on a
+sufficient number of samples to establish their proper direction.
+These vectors are excluded from further analysis.
+The vectors for \word{VOID\_1}, \dots, \word{VOID\_6}, on the other hand,
+exhibit the smooth change in word vector direction with word frequency described in
+the previous paragraph.
 
-From these results, we conclude that word frequency has no effect on the
-direction of a word vector, given a sufficient number of samples to
-learn the co-occurrence distribution of the word.
+In recent work on the evaluation of word embeddings, Schnabel et
+al.~\cite{schnabelemnlp2015} trained logistic regression models to
+predict whether a word was rare or frequent given only the direction of
+its word vector.  For various word embedding methods, the prediction
+accuracy was measured as a function of the threshold for word rarity.
+It was found in the case of word2vec CBOW that word vector direction
+could be used to distinguish very rare words from all other words.
+Figure~\ref{word-frequency-experiment-heatmap} is consistent with this finding,
+as it is apparent that word vector direction does change gradually with
+frequency.  Schnabel et al.\ claim further that word vector direction must
+encode word frequency directly, and not indirectly via semantic information.
+Figure~\ref{word-frequency-experiment-heatmap}, considered for any particular
+experiment word in isolation (e.g. \word{SQUAD}), demonstrates that the variance of word
+vector direction with word frequency is indeed independent
+of co-occurrence (semantic) information, and thereby provides further evidence
+for this claim. 
 
 \subsubsection{Word frequency and vector length}
 We next consider the effect of frequency on word vector length.
@@ -465,16 +458,6 @@ particular, the vector of the pseudoword \word{VOID\_1} may be taken as an appro
           were chosen randomly.  }
 	\label{word-frequency-experiment-heatmap}
 \end{figure}
-
-\begin{table}
-	\input{cosine-similarity.tex}
-	\caption{ Words in the original vocabulary most similar to the
-          pseudowords \word{THE\_i}, and their cosine similarity with the
-          most frequent such pseudoword, \word{THE\_1}.  It is apparent from
-          the nearest neighbour list that the vectors of the
-          low-frequency pseudowords have not been adequately trained.  }
-	\label{word-frequency-experiment-cosine-similarity}
-\end{table}
 
 \begin{sidewaysfigure*}
 	\centering{\includegraphics[scale=0.6]{word-frequency-experiment-graph}}
@@ -669,6 +652,10 @@ performance on similarity tasks could be achieved by transforming the
 feature space or modifying the model such that the representation of
 pure noise, i.e., the vector for \word{VOID}, is at the origin of the
 transformed feature space.
+\end{section}
+
+\begin{section}{Acknowledgments}
+The authors thank Tobias Schnabel for helpful discussions.
 \end{section}
 
 \clearpage
