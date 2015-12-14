@@ -373,32 +373,32 @@ associated with an experiment word is the number of times that its
 frequency can be halved and remain above the low-frequency cut-off of
 $128$.
 
-Consider first the word vectors for the pseudowords associated to the word
-\word{the}.  Notice that the cosine similarity of the word vectors for
+Consider first the vectors for the pseudowords associated to the word
+\word{the}.  Notice that the cosine similarity of the vectors for
 \word{THE\_1} and \word{THE\_i} decreases monotonically with $i$, while the
-cosine similarity of the word vectors for \word{THE\_i} and \word{THE\_18}
+cosine similarity of the vectors for \word{THE\_i} and \word{THE\_18}
 increases monotonically with $i$.  Indeed the direction of
-the word vector \word{THE\_i} changes systematically, interpolating between the
-directions of the word vectors of the highest-frequency pseudoword
+the vector \word{THE\_i} changes systematically, interpolating between the
+directions of the vectors of the highest-frequency pseudoword
 \word{THE\_1} and the lowest-frequency pseudoword \word{THE\_18}.  The same
 trend is apparent (though over shorter frequency ranges) for all the families of pseudowords
 other than that for \word{VOID}.
 
-Consider now the word vectors for pseudowords derived from the meaningless word
-\word{VOID}.  The word vectors for \word{VOID\_7}, \dots, \word{VOID\_13}
+Consider now the vectors for pseudowords derived from the meaningless word
+\word{VOID}.  The vectors for \word{VOID\_7}, \dots, \word{VOID\_13}
 are approximately orthogonal to one another, just as would be expected from
 randomly drawn vectors in a high dimensional space.
 As the pseudoword \word{VOID} occurs by
 construction in every context, a much higher number of samples is
 required to capture its co-occurrence distribution, and
-thereby to learn its word vector (the same is true, but to a lesser
+thereby to learn its vector (the same is true, but to a lesser
 extent, for the stopword \word{the}).
 We conclude that the vectors corresponding to the lower frequency
 pseudowords \word{VOID\_7}, \dots, \word{VOID\_13} have not been trained on a
 sufficient number of samples to establish their proper direction.
 These vectors are excluded from further analysis.
 The vectors for \word{VOID\_1}, \dots, \word{VOID\_6}, on the other hand,
-exhibit the smooth change in word vector direction with word frequency described in
+exhibit the smooth change in vector direction with word frequency described in
 the previous paragraph.
 
 In recent work on the evaluation of word embeddings, Schnabel et
